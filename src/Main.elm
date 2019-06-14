@@ -3,6 +3,7 @@ port module FourSeasonsApp exposing (Flags, Model, Msg(..), debugInfo, distorted
 --import Date exposing (Date)
 
 import Browser
+import Date exposing (Date)
 import FourSeasons exposing (..)
 import FourSeasons.Utils as Utils
 import Html exposing (Attribute, Html, audio, div, li, pre, text, ul)
@@ -11,6 +12,7 @@ import Html.Events exposing (on)
 import Json.Decode as Json
 import Music exposing (Movement)
 import Music.Movement as Movement
+import Time exposing (utc)
 import Types exposing (Time)
 
 
@@ -193,21 +195,32 @@ debugInfo model =
     let
         currentMovement =
             Movement.currentFromTime model.currentTime
+
+        currentPosix =
+            Utils.timeToPosix model.currentTime
     in
     pre []
-        [ text "Hey"
+        [ text
+            (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)
+                ++ " "
+                ++ Utils.formatTime currentPosix
+                ++ "\n"
+                --++ "\n"
+                ++ Debug.toString (Movement.next currentMovement)
+                ++ "\n"
+                ++ Debug.toString (Movement.remaininigTillNext model.currentTime)
+                ++ "\n"
+                ++ Date.format "MMMM ddd, y" (Utils.startDate currentMovement)
+                --++ Debug.toString (Utils.startDate currentMovement)
+                ++ "\n"
+                ++ Debug.toString model.currentTime
+                ++ "\n"
+                --++ Debug.toString (model.movements |> List.reverse |> List.head)
+                ++ "\n"
+                ++ .label currentMovement
+            )
 
         --(toString (Utils.timeToDate model.currentTime)
-        --    ++ "\n"
-        --    ++ toString (Movement.next currentMovement)
-        --    ++ "\n"
-        --    ++ toString (Movement.remaininigTillNext model.currentTime)
-        --    ++ "\n"
-        --    ++ toString (Utils.startDate currentMovement)
-        --    ++ "\n"
-        --    ++ toString model.currentTime
-        -- --(.label (currentMovement))
-        -- --++ toString (model.movements |> List.reverse |> List.head)
         --)
         ]
 

@@ -1,12 +1,11 @@
-module FourSeasons.Utils exposing (color, rangeMap, startDate, startOf1988, timeToDate)
+module FourSeasons.Utils exposing (color, formatTime, rangeMap, startDate, startOf1988, timeToDate, timeToPosix)
 
 --import Date exposing (Date, Month(..))
 
 import Date exposing (Date)
 import Music exposing (Movement)
 import Music.Movement as Movement
-import Time exposing (Month(..), Posix, millisToPosix, posixToMillis, utc)
-import Types exposing (Time)
+import Time exposing (Month(..), Posix, millisToPosix, posixToMillis, toHour, toMinute, utc)
 
 
 
@@ -17,8 +16,8 @@ startOf1988 =
     567993600000
 
 
-timeToDate : Time -> Date
-timeToDate currentTime =
+timeToPosix : Float -> Posix
+timeToPosix currentTime =
     let
         currentMovement =
             Movement.currentFromTime currentTime
@@ -50,7 +49,12 @@ timeToDate currentTime =
 
         --newTime = (currentTime - currentMovement.start)/(Movement.ends currentMovement - currentMovement.start) * (e - s) + s
     in
-    Date.fromPosix utc (millisToPosix (round (rangeMap currentTime currentMovement.start (Movement.ends currentMovement) s e)))
+    millisToPosix (round (rangeMap currentTime currentMovement.start (Movement.ends currentMovement) s e))
+
+
+timeToDate : Float -> Date
+timeToDate currentTime =
+    Date.fromPosix utc (timeToPosix currentTime)
 
 
 
@@ -59,7 +63,7 @@ timeToDate currentTime =
 
 dateToMillis : Date -> Float
 dateToMillis date =
-    toFloat (Date.ordinalDay date)
+    toFloat (Date.ordinalDay date) * 1.0e3 * 86400 + startOf1988
 
 
 rangeMap : Float -> Float -> Float -> Float -> Float -> Float
@@ -75,6 +79,13 @@ startDate movement =
 color : Movement -> Int -> Int -> String
 color movement s l =
     "hsl(" ++ String.join "," [ String.fromInt movement.hue, String.fromInt s ++ "%", String.fromInt l ++ "%" ] ++ ")"
+
+
+formatTime : Posix -> String
+formatTime posix =
+    String.fromInt (toHour utc posix)
+        ++ ":"
+        ++ String.fromInt (toMinute utc posix)
 
 
 
