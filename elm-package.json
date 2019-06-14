@@ -1,7 +1,7 @@
 {
-    "version": "1.0.0-alpha1",
+    "version": "0.1.1",
     "summary": "An exploration of Vivaldi's Four Seasons",
-    "repository": "https://",
+    "repository": "https://github.com/aularon/norepo.git",
     "license": "BSD3",
     "source-directories": [
         "src"
