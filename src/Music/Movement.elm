@@ -1,9 +1,10 @@
 module Music.Movement exposing (currentFromTime, ends, next, remaininigTillNext)
 
-import Date exposing (Date)
+--import Date exposing (Date)
+
 import FourSeasons exposing (..)
 import Music exposing (Movement)
-import Time exposing (Time)
+import Types exposing (Time)
 
 
 

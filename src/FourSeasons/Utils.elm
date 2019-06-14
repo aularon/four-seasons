@@ -1,9 +1,12 @@
 module FourSeasons.Utils exposing (color, rangeMap, startDate, startOf1988, timeToDate)
 
-import Date exposing (Date, Month(Jan))
+--import Date exposing (Date, Month(..))
+
+import Date exposing (Date)
 import Music exposing (Movement)
 import Music.Movement as Movement
-import Time exposing (Time)
+import Time exposing (Month(..), Posix, millisToPosix, posixToMillis, utc)
+import Types exposing (Time)
 
 
 
@@ -30,10 +33,10 @@ timeToDate currentTime =
             startDate nextMovement
 
         s =
-            Date.toTime start
+            dateToMillis start
 
         e =
-            Date.toTime end
+            dateToMillis end
                 + (if
                     Jan == nextMovement.month
                     -- Add full year, so it is Jan 1989
@@ -42,16 +45,21 @@ timeToDate currentTime =
                     1.0e3 * 86400 * 365
 
                    else
-                    0
+                    0.0
                   )
 
         --newTime = (currentTime - currentMovement.start)/(Movement.ends currentMovement - currentMovement.start) * (e - s) + s
     in
-    Date.fromTime (rangeMap currentTime currentMovement.start (Movement.ends currentMovement) s e)
+    Date.fromPosix utc (millisToPosix (round (rangeMap currentTime currentMovement.start (Movement.ends currentMovement) s e)))
 
 
 
 --Date.fromTime (567993600000 + (currentTime/2520.38117) * 1e3 * 86400 * 365)
+
+
+dateToMillis : Date -> Float
+dateToMillis date =
+    toFloat (Date.ordinalDay date)
 
 
 rangeMap : Float -> Float -> Float -> Float -> Float -> Float
@@ -61,18 +69,12 @@ rangeMap oldVal oldMin oldMax newMin newMax =
 
 startDate : Movement -> Date
 startDate movement =
-    case Date.fromString (toString movement.month ++ " " ++ toString movement.day ++ ", 1988") of
-        --Result String d -> d
-        Ok d ->
-            d
-
-        Err e ->
-            timeToDate 0
+    Date.fromCalendarDate 1988 movement.month movement.day
 
 
 color : Movement -> Int -> Int -> String
 color movement s l =
-    "hsl(" ++ String.join "," [ toString movement.hue, toString s ++ "%", toString l ++ "%" ] ++ ")"
+    "hsl(" ++ String.join "," [ String.fromInt movement.hue, String.fromInt s ++ "%", String.fromInt l ++ "%" ] ++ ")"
 
 
 

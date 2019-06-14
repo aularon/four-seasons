@@ -1,11 +1,10 @@
 module Music exposing (Movement)
 
-import Date exposing (..)
-import Time exposing (Time)
-
-
-
+--import Date exposing (..)
 -- Types
+
+import Time exposing (Month)
+import Types exposing (Time)
 
 
 type alias Movement =

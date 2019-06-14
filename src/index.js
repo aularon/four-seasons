@@ -14,7 +14,10 @@ const elmSeed = {
     length: (data.Movements[i + 1]? data.Movements[i + 1].abs_start_audio : 42 * 60) - m.abs_start_audio
   }))
 }
-const app = Elm.FourSeasonsApp.embed(main, elmSeed);
+const app = Elm.Elm.FourSeasonsApp.init({
+  flags: elmSeed,
+  node: main
+});
 
 app.ports.setCurrentTime.subscribe(function(time) {
     document.getElementById('player').currentTime = time;

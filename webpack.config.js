@@ -18,7 +18,7 @@ module.exports = {
         // loader: '../index.js',
         options: {
           debug: true,
-          warn: true
+          // warn: true
         }
       },
       {

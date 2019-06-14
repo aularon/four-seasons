@@ -1,6 +1,8 @@
 port module FourSeasonsApp exposing (Flags, Model, Msg(..), debugInfo, distortedProgressToTime, init, initModel, main, movementToLi, onTimeUpdate, percentLength, progressToTime, setCurrentTime, setProgress, subscriptions, targetCurrentTime, timeToDistortedProgress, timeToProgress, update, view)
 
-import Date exposing (Date)
+--import Date exposing (Date)
+
+import Browser
 import FourSeasons exposing (..)
 import FourSeasons.Utils as Utils
 import Html exposing (Attribute, Html, audio, div, li, pre, text, ul)
@@ -9,7 +11,7 @@ import Html.Events exposing (on)
 import Json.Decode as Json
 import Music exposing (Movement)
 import Music.Movement as Movement
-import Time exposing (Time)
+import Types exposing (Time)
 
 
 
@@ -17,7 +19,7 @@ import Time exposing (Time)
 
 
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = view
         , update = update
@@ -63,11 +65,12 @@ targetCurrentTime =
 
 
 --
+--
 
 
 setProgress : Bool -> String -> Msg
 setProgress equalizeSizes input =
-    SetTime (progressToTime equalizeSizes (Result.withDefault 0 (String.toFloat input)))
+    SetTime (progressToTime equalizeSizes (Maybe.withDefault 0 (String.toFloat input)))
 
 
 
@@ -192,19 +195,20 @@ debugInfo model =
             Movement.currentFromTime model.currentTime
     in
     pre []
-        [ text
-            (toString (Utils.timeToDate model.currentTime)
-                ++ "\n"
-                ++ toString (Movement.next currentMovement)
-                ++ "\n"
-                ++ toString (Movement.remaininigTillNext model.currentTime)
-                ++ "\n"
-                ++ toString (Utils.startDate currentMovement)
-                ++ "\n"
-                ++ toString model.currentTime
-             --(.label (currentMovement))
-             --++ toString (model.movements |> List.reverse |> List.head)
-            )
+        [ text "Hey"
+
+        --(toString (Utils.timeToDate model.currentTime)
+        --    ++ "\n"
+        --    ++ toString (Movement.next currentMovement)
+        --    ++ "\n"
+        --    ++ toString (Movement.remaininigTillNext model.currentTime)
+        --    ++ "\n"
+        --    ++ toString (Utils.startDate currentMovement)
+        --    ++ "\n"
+        --    ++ toString model.currentTime
+        -- --(.label (currentMovement))
+        -- --++ toString (model.movements |> List.reverse |> List.head)
+        --)
         ]
 
 
@@ -214,7 +218,7 @@ view model =
         currentMovement =
             Movement.currentFromTime model.currentTime
     in
-    div [ class "container", style [ ( "background", Utils.color currentMovement 50 70 ) ] ]
+    div [ class "container", style "background" (Utils.color currentMovement 50 70) ]
         [ audio
             [ Html.Attributes.id "player"
             , src "./four-seasons.mp3"
@@ -229,7 +233,7 @@ view model =
                 [ type_ "range"
                 , Html.Attributes.max "100"
                 , Html.Attributes.step "0.01"
-                , Html.Attributes.value (toString (timeToProgress model.equalizeSizes model.currentTime))
+                , Html.Attributes.value (String.fromFloat (timeToProgress model.equalizeSizes model.currentTime))
                 , Html.Events.onInput (setProgress model.equalizeSizes)
                 ]
                 []
@@ -257,7 +261,8 @@ movementToLi m model =
     in
     li
         [ classList [ ( "active", m == currentMovement ) ]
-        , style [ ( "background", Utils.color m 70 40 ), ( "width", toString width ++ "%" ) ]
+        , style "background" (Utils.color m 70 40)
+        , style "width" (String.fromFloat width ++ "%")
         ]
         [ text m.label ]
 
