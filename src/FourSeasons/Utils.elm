@@ -1,6 +1,7 @@
 module FourSeasons.Utils exposing (color, formatTime, rangeMap, startDate, startOf1988, timeToDate, timeToPosix)
 
 --import Date exposing (Date, Month(..))
+--import Color exposing (Color)
 
 import Date exposing (Date)
 import Music exposing (Movement)
@@ -9,11 +10,15 @@ import Time exposing (Month(..), Posix, millisToPosix, posixToMillis, toHour, to
 
 
 
---import Color exposing (Color)
+-- number of seconds between 1970-01-01 and 1988-01-01
 
 
 startOf1988 =
     567993600000
+
+
+
+-- takes current audio time and gives us back a posix date
 
 
 timeToPosix : Float -> Posix
@@ -52,6 +57,10 @@ timeToPosix currentTime =
     millisToPosix (round (rangeMap currentTime currentMovement.start (Movement.ends currentMovement) s e))
 
 
+
+-- takes current audio time and gives us Date
+
+
 timeToDate : Float -> Date
 timeToDate currentTime =
     Date.fromPosix utc (timeToPosix currentTime)
@@ -66,9 +75,17 @@ dateToMillis date =
     toFloat (Date.ordinalDay date) * 1.0e3 * 86400 + startOf1988
 
 
+
+-- maps a value from one range to another
+
+
 rangeMap : Float -> Float -> Float -> Float -> Float -> Float
 rangeMap oldVal oldMin oldMax newMin newMax =
     (oldVal - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin
+
+
+
+-- gets the start date from a movement
 
 
 startDate : Movement -> Date
@@ -76,9 +93,17 @@ startDate movement =
     Date.fromCalendarDate 1988 movement.month movement.day
 
 
+
+-- gets an hsl(,,) css string representation from a movement and saturation/luminisity pair
+
+
 color : Movement -> Int -> Int -> String
 color movement s l =
     "hsl(" ++ String.join "," [ String.fromInt movement.hue, String.fromInt s ++ "%", String.fromInt l ++ "%" ] ++ ")"
+
+
+
+-- formats time, used in debugging for now
 
 
 formatTime : Posix -> String

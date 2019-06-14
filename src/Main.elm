@@ -1,4 +1,4 @@
-port module FourSeasonsApp exposing (Flags, Model, Msg(..), debugInfo, distortedProgressToTime, init, initModel, main, movementToLi, onTimeUpdate, percentLength, progressToTime, setCurrentTime, setProgress, subscriptions, targetCurrentTime, timeToDistortedProgress, timeToProgress, update, view)
+port module FourSeasonsApp exposing (main)
 
 --import Date exposing (Date)
 
@@ -13,7 +13,6 @@ import Json.Decode as Json
 import Music exposing (Movement)
 import Music.Movement as Movement
 import Time exposing (utc)
-import Types exposing (Time)
 
 
 
@@ -34,7 +33,7 @@ main =
 
 
 type alias Model =
-    { currentTime : Time
+    { currentTime : Float
     , equalizeSizes : Bool
     , title : String
     }
@@ -42,6 +41,7 @@ type alias Model =
 
 
 -- MSG
+-- Different type of messages we get to our update function
 
 
 type Msg
@@ -53,21 +53,30 @@ type Msg
 
 
 -- Custom event handler
+-- Used in the view to handle the audio's `timeupdate`
 
 
-onTimeUpdate : (Time -> msg) -> Attribute msg
+onTimeUpdate : (Float -> msg) -> Attribute msg
 onTimeUpdate msg =
     on "timeupdate" (Json.map msg targetCurrentTime)
 
 
-targetCurrentTime : Json.Decoder Time
+targetCurrentTime : Json.Decoder Float
 targetCurrentTime =
     Json.at [ "target", "currentTime" ] Json.float
 
 
 
---
---
+-- 100% split among the 12 movements
+
+
+percentLength =
+    100 / 12
+
+
+
+-- This one takes current progress as input (along current equalizeSizes flag) and emits a SetTime Msg
+-- Used in the range input (slider) onInput handler
 
 
 setProgress : Bool -> String -> Msg
@@ -76,11 +85,7 @@ setProgress equalizeSizes input =
 
 
 
--- function and its inverse
-
-
-percentLength =
-    8.3333
+-- convert current % progress to a timestamp
 
 
 progressToTime : Bool -> Float -> Float
@@ -91,6 +96,10 @@ progressToTime equalizeSizes progress =
 
         False ->
             progress * fullLength / 100
+
+
+
+-- The distorted extension of the one above
 
 
 distortedProgressToTime : Float -> Float
@@ -122,6 +131,11 @@ distortedProgressToTime progress =
     adjustedTime
 
 
+
+-- now this one is used to set current value of the slider (input range control)
+-- it depends on current time, and respects equalizeSizes flag
+
+
 timeToProgress : Bool -> Float -> Float
 timeToProgress equalizeSizes time =
     case equalizeSizes of
@@ -130,6 +144,10 @@ timeToProgress equalizeSizes time =
 
         False ->
             time * 100 / fullLength
+
+
+
+-- The distorted extension of the one above
 
 
 timeToDistortedProgress : Float -> Float
@@ -152,6 +170,7 @@ timeToDistortedProgress time =
 
 
 -- PORT
+-- this is subscribed to from javascript side
 
 
 port setCurrentTime : Float -> Cmd msg
@@ -164,9 +183,11 @@ port setCurrentTime : Float -> Cmd msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        -- The audio is playing and we get an update
         TimeUpdate time ->
             ( { model | currentTime = time }, Cmd.none )
 
+        -- The user seeks to a new timing
         SetTime newTime ->
             ( model, setCurrentTime newTime )
 
@@ -189,6 +210,7 @@ subscriptions model =
 
 
 -- VIEW
+-- This one gets us a nice debug div
 
 
 debugInfo model =
@@ -225,6 +247,10 @@ debugInfo model =
         ]
 
 
+
+-- our main view div
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -256,6 +282,10 @@ view model =
             , text "Equalize Sizes?"
             ]
         ]
+
+
+
+-- view helper, gets a listing LI from movement
 
 
 movementToLi : Movement -> Model -> Html msg

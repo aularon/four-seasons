@@ -4,14 +4,13 @@ module Music exposing (Movement)
 -- Types
 
 import Time exposing (Month)
-import Types exposing (Time)
 
 
 type alias Movement =
     { index : Int
     , label : String
-    , start : Time
-    , length : Time
+    , start : Float
+    , length : Float
     , hue : Int
     , month : Month
     , day : Int

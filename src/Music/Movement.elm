@@ -4,15 +4,15 @@ module Music.Movement exposing (currentFromTime, ends, next, remaininigTillNext)
 
 import FourSeasons exposing (..)
 import Music exposing (Movement)
-import Types exposing (Time)
 
 
 
 --length: List Movement -> Movement -> Time
 --length movements m =
+-- figures out current movement from current time stamp
 
 
-currentFromTime : Time -> Movement
+currentFromTime : Float -> Movement
 currentFromTime currentTime =
     case
         movements
@@ -24,6 +24,10 @@ currentFromTime currentTime =
 
         Just val ->
             val
+
+
+
+-- gets next movement or first one (if we got last)
 
 
 next : Movement -> Movement
@@ -50,12 +54,20 @@ next currentMovement =
     nextFromMovements loopingMovements
 
 
-ends : Movement -> Time
+
+-- returns the end timestamp of a movement
+
+
+ends : Movement -> Float
 ends m =
     m.start + m.length
 
 
-remaininigTillNext : Time -> Time
+
+-- how much time is left until the next movement/end of the track
+
+
+remaininigTillNext : Float -> Float
 remaininigTillNext currentTime =
     let
         current =
