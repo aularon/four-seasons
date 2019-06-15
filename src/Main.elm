@@ -69,13 +69,6 @@ targetCurrentTime =
 
 
 -- 100% split among the 12 movements
-
-
-percentLength =
-    100 / 12
-
-
-
 -- This one takes current progress as input (along current equalizeSizes flag) and emits a SetTime Msg
 -- Used in the range input (slider) onInput handler
 
@@ -288,6 +281,9 @@ view model =
     let
         currentMovement =
             Movement.currentFromTime model.currentTime
+
+        currentPosix =
+            Utils.timeToPosix model.currentTime
     in
     div [ class "container", style "background" (Utils.color (Utils.timeToHue model.currentTime) 50 70) ]
         [ audio
@@ -298,8 +294,20 @@ view model =
             ]
             []
         , debugInfo model
+        , div []
+            [ div [] [ text (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)) ]
+            , div [] [ text "la sonata" ]
+            , div [] [ text "deine colore" ]
+            ]
         , div [ class "seeker" ]
-            [ Html.ul [] (Array.toList (Array.map (\m -> movementToLi m model) movements))
+            [ Html.ul
+                [ class "movements"
+                ]
+                (Array.toList (Array.map (\m -> movementToLi m model) movements))
+            , Html.ul
+                [ class "seasons"
+                ]
+                (seasons |> Array.map (seasonToLi model) |> Array.toList)
             , Html.input
                 [ type_ "range"
                 , Html.Attributes.max "100"
@@ -316,6 +324,22 @@ view model =
         ]
 
 
+seasonToLi model s =
+    let
+        width =
+            s.movements
+                |> Array.slice 0 3
+                |> Array.map (Movement.percentWidth model.equalizeSizes)
+                |> Array.foldr (+) 0
+    in
+    li
+        [ style "width"
+            (String.fromFloat width ++ "%")
+        , style "background" (Utils.color s.hue 70 40)
+        ]
+        [ text s.name ]
+
+
 
 -- view helper, gets a listing LI from movement
 
@@ -327,12 +351,7 @@ movementToLi m model =
             Movement.currentFromTime model.currentTime
 
         width =
-            case model.equalizeSizes of
-                True ->
-                    percentLength
-
-                False ->
-                    m.length / fullLength * 100
+            Movement.percentWidth model.equalizeSizes m
     in
     li
         [ classList [ ( "active", m == currentMovement ) ]

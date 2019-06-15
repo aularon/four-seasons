@@ -1,4 +1,4 @@
-module Music.Movement exposing (center, currentFromTime, ends, next, prev, remaininigTillNext)
+module Music.Movement exposing (center, currentFromTime, ends, next, percentWidth, prev, remaininigTillNext)
 
 --import Date exposing (Date)
 
@@ -82,3 +82,13 @@ remaininigTillNext currentTime =
             currentFromTime currentTime
     in
     ends current - currentTime
+
+
+percentWidth : Bool -> Movement -> Float
+percentWidth equalizeSizes m =
+    case equalizeSizes of
+        True ->
+            percentLength
+
+        False ->
+            m.length / fullLength * 100

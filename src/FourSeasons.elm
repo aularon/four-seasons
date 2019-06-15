@@ -1,4 +1,4 @@
-module FourSeasons exposing (defaultMovement, firstMovement, fullLength, lastMovement, movements)
+module FourSeasons exposing (defaultMovement, firstMovement, fullLength, lastMovement, movements, percentLength, seasons)
 
 --import Date exposing (..)
 
@@ -36,6 +36,22 @@ movements =
         |> Array.fromList
 
 
+type alias Season =
+    { name : String
+    , hue : Float
+    , movements : Array.Array Movement
+    }
+
+
+seasons =
+    [ Season "Spring" 120 (Array.slice 0 3 movements)
+    , Season "Summer" 60 (Array.slice 3 6 movements)
+    , Season "Autumn" 0 (Array.slice 6 9 movements)
+    , Season "Winter" 220 (Array.slice 9 12 movements)
+    ]
+        |> Array.fromList
+
+
 
 --defaultMovement = Movement "-" -1 -1 -1 Mar 21
 
@@ -46,3 +62,7 @@ defaultMovement =
 
 fullLength =
     2520.4
+
+
+percentLength =
+    100 / 12
