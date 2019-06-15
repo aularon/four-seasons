@@ -226,20 +226,42 @@ debugInfo model =
             (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)
                 ++ " "
                 ++ Utils.formatTime currentPosix
-                ++ "\n"
+                ++ "\nCurrent: "
+                ++ Debug.toString currentMovement
+                ++ " ends @"
+                ++ (currentMovement
+                        |> Movement.ends
+                        |> Debug.toString
+                   )
+                ++ "\nNext: "
                 --++ "\n"
                 ++ Debug.toString (Movement.next currentMovement)
-                ++ "\n"
+                ++ " ends @"
+                ++ (currentMovement
+                        |> Movement.next
+                        |> Movement.ends
+                        |> Debug.toString
+                   )
+                ++ "\nRemaining: "
                 ++ Debug.toString (Movement.remaininigTillNext model.currentTime)
-                ++ "\n"
+                ++ "\nDate: "
                 ++ Date.format "MMMM ddd, y" (Utils.startDate currentMovement)
                 --++ Debug.toString (Utils.startDate currentMovement)
-                ++ "\n"
+                ++ "\nCurrent Time: "
                 ++ Debug.toString model.currentTime
                 ++ "\n"
                 --++ Debug.toString (model.movements |> List.reverse |> List.head)
                 ++ "\n"
                 ++ .label currentMovement
+                ++ "\n"
+                ++ (model.currentTime
+                        |> Debug.toString
+                   )
+                ++ "\n"
+                ++ (model.currentTime
+                        |> Utils.timeToHue
+                        |> Debug.toString
+                   )
             )
 
         --(toString (Utils.timeToDate model.currentTime)
@@ -327,9 +349,3 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     --Debug.log "flags" flags
     ( { initModel | title = flags.title }, Cmd.none )
-
-
-
--- Functions
---TimeToHue : Integer -> Integer
---TimeToHue =

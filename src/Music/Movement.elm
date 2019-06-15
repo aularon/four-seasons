@@ -1,4 +1,4 @@
-module Music.Movement exposing (currentFromTime, ends, next, remaininigTillNext)
+module Music.Movement exposing (center, currentFromTime, ends, next, remaininigTillNext)
 
 --import Date exposing (Date)
 
@@ -61,6 +61,11 @@ next currentMovement =
 ends : Movement -> Float
 ends m =
     m.start + m.length
+
+
+center : Movement -> Float
+center m =
+    (m.start + ends m) / 2
 
 
 

@@ -1,4 +1,4 @@
-module FourSeasons.Utils exposing (color, formatTime, rangeMap, startDate, startOf1988, timeToDate, timeToPosix)
+module FourSeasons.Utils exposing (color, formatTime, rangeMap, startDate, startOf1988, timeToDate, timeToHue, timeToPosix)
 
 --import Date exposing (Date, Month(..))
 --import Color exposing (Color)
@@ -117,3 +117,31 @@ formatTime posix =
 --let
 --  c = Color.fromHsl (degrees movement.hue) s l
 --in
+-- the center of the movement is its hue
+-- this function returns a hue that changes gradually with time
+
+
+timeToHue : Float -> Float
+timeToHue time =
+    let
+        currentMovement =
+            Movement.currentFromTime time
+
+        currentCenter =
+            Movement.center currentMovement
+
+        ( firstMovement, secondMovement ) =
+            if time < currentCenter then
+                ( currentMovement, currentMovement )
+
+            else
+                ( currentMovement, Movement.next currentMovement )
+
+        -- we are repeating the extraction for the current center
+        firstCenter =
+            Movement.center firstMovement
+
+        secondCenter =
+            Movement.center secondMovement
+    in
+    rangeMap time firstCenter secondCenter (toFloat firstMovement.hue) (toFloat secondMovement.hue)
