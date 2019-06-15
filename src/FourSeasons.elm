@@ -2,6 +2,7 @@ module FourSeasons exposing (defaultMovement, firstMovement, fullLength, movemen
 
 --import Date exposing (..)
 
+import Array
 import Music exposing (Movement)
 import Time exposing (Month(..))
 
@@ -28,6 +29,7 @@ movements =
     , Movement 10 "Largo (in E-flat major)" 2201 136 220 Jan 21
     , Movement 11 "Allegro (in F minor)" 2337 183 180 Feb 21
     ]
+        |> Array.fromList
 
 
 

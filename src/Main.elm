@@ -2,6 +2,7 @@ port module FourSeasonsApp exposing (main)
 
 --import Date exposing (Date)
 
+import Array
 import Browser
 import Date exposing (Date)
 import FourSeasons exposing (..)
@@ -109,7 +110,7 @@ distortedProgressToTime progress =
             floor (progress / percentLength)
 
         movement =
-            case movements |> List.drop movementNumber |> List.head of
+            case Array.get movementNumber movements of
                 Nothing ->
                     defaultMovement
 
@@ -289,7 +290,7 @@ view model =
             []
         , debugInfo model
         , div [ class "seeker" ]
-            [ Html.ul [] (List.map (\m -> movementToLi m model) movements)
+            [ Html.ul [] (Array.toList (Array.map (\m -> movementToLi m model) movements))
             , Html.input
                 [ type_ "range"
                 , Html.Attributes.max "100"

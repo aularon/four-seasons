@@ -2,6 +2,7 @@ module Music.Movement exposing (center, currentFromTime, ends, next, remaininigT
 
 --import Date exposing (Date)
 
+import Array
 import FourSeasons exposing (..)
 import Music exposing (Movement)
 
@@ -16,8 +17,8 @@ currentFromTime : Float -> Movement
 currentFromTime currentTime =
     case
         movements
-            |> List.filter (\x -> x.start + x.length > currentTime)
-            |> List.head
+            |> Array.filter (\x -> x.start + x.length > currentTime)
+            |> Array.get 0
     of
         Nothing ->
             defaultMovement
@@ -32,26 +33,15 @@ currentFromTime currentTime =
 
 next : Movement -> Movement
 next currentMovement =
-    let
-        loopingMovements =
-            movements
+    case
+        movements
+            |> Array.get (currentMovement.index + 1)
+    of
+        Nothing ->
+            firstMovement
 
-        nextFromMovements l =
-            case l of
-                x :: [] ->
-                    firstMovement
-
-                x :: y :: rest ->
-                    if x == currentMovement then
-                        y
-
-                    else
-                        nextFromMovements (y :: rest)
-
-                _ ->
-                    defaultMovement
-    in
-    nextFromMovements loopingMovements
+        Just val ->
+            val
 
 
 
