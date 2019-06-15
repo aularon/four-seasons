@@ -1,4 +1,4 @@
-module FourSeasons exposing (defaultMovement, firstMovement, fullLength, movements)
+module FourSeasons exposing (defaultMovement, firstMovement, fullLength, lastMovement, movements)
 
 --import Date exposing (..)
 
@@ -15,6 +15,10 @@ firstMovement =
     Movement 0 "Allegro (in E major)" 0 222 150 Mar 21
 
 
+lastMovement =
+    Movement 11 "Allegro (in F minor)" 2337 183 180 Feb 21
+
+
 movements =
     [ firstMovement
     , Movement 1 "Largo e pianissimo sempre (in C-sharp minor)" 222 160 120 Apr 21
@@ -27,7 +31,7 @@ movements =
     , Movement 8 "Allegro (in F major)" 1736 226 340 Nov 22
     , Movement 9 "Allegro non molto (in F minor)" 1962 239 280 Dec 21
     , Movement 10 "Largo (in E-flat major)" 2201 136 220 Jan 21
-    , Movement 11 "Allegro (in F minor)" 2337 183 180 Feb 21
+    , lastMovement
     ]
         |> Array.fromList
 

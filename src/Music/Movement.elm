@@ -1,4 +1,4 @@
-module Music.Movement exposing (center, currentFromTime, ends, next, remaininigTillNext)
+module Music.Movement exposing (center, currentFromTime, ends, next, prev, remaininigTillNext)
 
 --import Date exposing (Date)
 
@@ -39,6 +39,19 @@ next currentMovement =
     of
         Nothing ->
             firstMovement
+
+        Just val ->
+            val
+
+
+prev : Movement -> Movement
+prev currentMovement =
+    case
+        movements
+            |> Array.get (currentMovement.index - 1)
+    of
+        Nothing ->
+            lastMovement
 
         Just val ->
             val

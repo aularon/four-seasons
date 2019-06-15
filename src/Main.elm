@@ -163,8 +163,8 @@ timeToDistortedProgress time =
         extraProgress =
             (time - currentMovement.start) * percentLength / currentMovement.length
 
-        _ =
-            Debug.log "debug 77:" ( baseProgress, extraProgress )
+        --_ =
+        --    Debug.log "debug 77:" ( baseProgress, extraProgress )
     in
     baseProgress + extraProgress
 
@@ -227,6 +227,15 @@ debugInfo model =
             (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)
                 ++ " "
                 ++ Utils.formatTime currentPosix
+                ++ "\nPrev: "
+                --++ "\n"
+                ++ Debug.toString (Movement.prev currentMovement)
+                ++ " ends @"
+                ++ (currentMovement
+                        |> Movement.prev
+                        |> Movement.ends
+                        |> Debug.toString
+                   )
                 ++ "\nCurrent: "
                 ++ Debug.toString currentMovement
                 ++ " ends @"
@@ -280,7 +289,7 @@ view model =
         currentMovement =
             Movement.currentFromTime model.currentTime
     in
-    div [ class "container", style "background" (Utils.color currentMovement 50 70) ]
+    div [ class "container", style "background" (Utils.color (Utils.timeToHue model.currentTime) 50 70) ]
         [ audio
             [ Html.Attributes.id "player"
             , src "./four-seasons.mp3"
@@ -327,7 +336,7 @@ movementToLi m model =
     in
     li
         [ classList [ ( "active", m == currentMovement ) ]
-        , style "background" (Utils.color m 70 40)
+        , style "background" (Utils.movementColor m 70 40)
         , style "width" (String.fromFloat width ++ "%")
         ]
         [ text m.label ]

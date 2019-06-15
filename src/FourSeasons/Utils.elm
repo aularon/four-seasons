@@ -1,4 +1,4 @@
-module FourSeasons.Utils exposing (color, formatTime, rangeMap, startDate, startOf1988, timeToDate, timeToHue, timeToPosix)
+module FourSeasons.Utils exposing (color, formatTime, movementColor, rangeMap, startDate, startOf1988, timeToDate, timeToHue, timeToPosix)
 
 --import Date exposing (Date, Month(..))
 --import Color exposing (Color)
@@ -97,9 +97,14 @@ startDate movement =
 -- gets an hsl(,,) css string representation from a movement and saturation/luminisity pair
 
 
-color : Movement -> Int -> Int -> String
-color movement s l =
-    "hsl(" ++ String.join "," [ String.fromInt movement.hue, String.fromInt s ++ "%", String.fromInt l ++ "%" ] ++ ")"
+movementColor : Movement -> Int -> Int -> String
+movementColor m s l =
+    color (toFloat m.hue) s l
+
+
+color : Float -> Int -> Int -> String
+color h s l =
+    "hsl(" ++ String.join "," [ String.fromFloat h, String.fromInt s ++ "%", String.fromInt l ++ "%" ] ++ ")"
 
 
 
@@ -132,7 +137,7 @@ timeToHue time =
 
         ( firstMovement, secondMovement ) =
             if time < currentCenter then
-                ( currentMovement, currentMovement )
+                ( Movement.prev currentMovement, currentMovement )
 
             else
                 ( currentMovement, Movement.next currentMovement )
@@ -143,5 +148,12 @@ timeToHue time =
 
         secondCenter =
             Movement.center secondMovement
+
+        _ =
+            Debug.log "hue" { time = time, firstCenter = firstCenter, secondCenter = secondCenter, fh = firstMovement.hue, sh = secondMovement.hue }
     in
-    rangeMap time firstCenter secondCenter (toFloat firstMovement.hue) (toFloat secondMovement.hue)
+    if firstMovement.hue == 0 then
+        rangeMap time firstCenter secondCenter 360 (toFloat secondMovement.hue)
+
+    else
+        rangeMap time firstCenter secondCenter (toFloat firstMovement.hue) (toFloat secondMovement.hue)
