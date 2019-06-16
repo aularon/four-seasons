@@ -38,6 +38,7 @@ type alias Model =
     { currentTime : Float
     , equalizeSizes : Bool
     , title : String
+    , seekerMouseIsDown : Bool
     }
 
 
@@ -53,6 +54,8 @@ type Msg
     | MouseMove MouseMovement
     | SetTime Float
     | ToggleSizing
+    | SeekerMouseDown
+    | SeekerMouseUp
 
 
 
@@ -191,8 +194,32 @@ update msg model =
         ToggleSizing ->
             ( { model | equalizeSizes = not model.equalizeSizes }, Cmd.none )
 
-        MouseMove { x, width } ->
-            ( model, setCurrentTime (fullLength * (x / width)) )
+        SeekerMouseDown ->
+            ( { model | seekerMouseIsDown = True }, Cmd.none )
+
+        SeekerMouseUp ->
+            ( { model | seekerMouseIsDown = False }, Cmd.none )
+
+        MouseMove m ->
+            case ( m.event, model.seekerMouseIsDown ) of
+                ( "mousemove", False ) ->
+                    ( model, Cmd.none )
+
+                _ ->
+                    let
+                        targetPercent =
+                            m.x * 100 / m.width
+
+                        targetTime =
+                            progressToTime model.equalizeSizes targetPercent
+
+                        _ =
+                            Debug.log "targetTime" targetTime
+
+                        _ =
+                            Debug.log "mm" m
+                    in
+                    ( model, setCurrentTime targetTime )
 
         _ ->
             --Debug.log "Unknown message" (msg)
@@ -309,7 +336,8 @@ exampleOnClickHandler =
 
 
 type alias MouseMovement =
-    { x : Float
+    { event : String
+    , x : Float
     , width : Float
     }
 
@@ -319,14 +347,21 @@ type alias MouseMovement =
 --}
 
 
+onSeek : String -> Html.Attribute Msg
 onSeek eventName =
-    on eventName (Json.map MouseMove mouseMoveDecoder)
+    case eventName of
+        "touchmove" ->
+            on eventName (Json.map MouseMove (mouseMoveDecoder [ "touches", "0", "clientX" ]))
+
+        _ ->
+            on eventName (Json.map MouseMove (mouseMoveDecoder [ "clientX" ]))
 
 
-mouseMoveDecoder : Json.Decoder MouseMovement
-mouseMoveDecoder =
-    Json.map2 MouseMovement
-        (Json.at [ "pageX" ] Json.float)
+mouseMoveDecoder : List String -> Json.Decoder MouseMovement
+mouseMoveDecoder xPath =
+    Json.map3 MouseMovement
+        (Json.at [ "type" ] Json.string)
+        (Json.at xPath Json.float)
         (Json.at [ "currentTarget", "offsetWidth" ] Json.float)
 
 
@@ -363,9 +398,12 @@ view model =
             ]
         , div
             [ --Html.Events.onClick MouseMove
-              exampleOnClickHandler
-            , onSeek "mousemove"
+              --exampleOnClickHandler
+              onSeek "mousemove"
+            , onSeek "touchmove"
             , style "background" "#fff"
+            , Html.Events.onMouseDown SeekerMouseDown
+            , Html.Events.onMouseUp SeekerMouseUp
             ]
             [ text "mousemove over me to seek!" ]
         , div
@@ -440,7 +478,7 @@ movementToLi m model =
 
 initModel : Model
 initModel =
-    { currentTime = 0, equalizeSizes = True, title = "" }
+    { currentTime = 0, equalizeSizes = True, title = "", seekerMouseIsDown = False }
 
 
 type alias Flags =
