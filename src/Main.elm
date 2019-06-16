@@ -402,6 +402,7 @@ view model =
               --exampleOnClickHandler
               onSeek "mousemove"
             , onSeek "touchmove"
+            , onSeek "mouseup"
             , style "background" "#fff"
             , on "mousedown" (Json.succeed SeekerMouseDown)
             ]
