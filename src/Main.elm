@@ -11,6 +11,7 @@ import Html exposing (Attribute, Html, audio, div, li, pre, text, ul)
 import Html.Attributes exposing (class, classList, controls, src, style, type_)
 import Html.Events exposing (on)
 import Json.Decode as Json
+import Json.Encode
 import Music exposing (Movement)
 import Music.Movement as Movement
 import Time exposing (utc)
@@ -47,7 +48,9 @@ type alias Model =
 
 type Msg
     = NoOp
+    | ExampleSimpleMessage
     | TimeUpdate Float
+    | MouseMove MouseMovement
     | SetTime Float
     | ToggleSizing
 
@@ -188,9 +191,19 @@ update msg model =
         ToggleSizing ->
             ( { model | equalizeSizes = not model.equalizeSizes }, Cmd.none )
 
+        MouseMove { x, width } ->
+            ( model, setCurrentTime (fullLength * (x / width)) )
+
         _ ->
             --Debug.log "Unknown message" (msg)
-            Debug.log "Unknown message" ( model, Cmd.none )
+            let
+                _ =
+                    Debug.log "Unknown message" msg
+
+                --_ =
+                --    Debug.log "msg" (Json.Encode.encode 2 msg)
+            in
+            ( model, Cmd.none )
 
 
 
@@ -273,7 +286,56 @@ debugInfo model =
 
 
 
+--debugMouseMove : (Float -> msg) -> Attribute msg
+--debugMouseMove msg =
+--    let
+--        _ =
+--            Debug.log "any" (J.encode 2 (msg 1))
+--    in
+--    on "mousemove" (Json.map msg (Json.at [ "target", "pageX" ] Json.float))
+--onClickNoBubble : Html.Attribute msg
+--onClickNoBubble =
+--    Html.Events.on "click" (Json.succeed { message = MouseMove, stopPropagation = True, preventDefault = True })
+--onClick : msg -> Attribute msg
+--onClick message =
+--onTimeUpdate : (Float -> msg) -> Attribute msg
+--onTimeUpdate msg =
+--    on "timeupdate" (Json.map msg targetCurrentTime)
 -- our main view div
+
+
+exampleOnClickHandler =
+    on "click" (Json.succeed ExampleSimpleMessage)
+
+
+type alias MouseMovement =
+    { x : Float
+    , width : Float
+    }
+
+
+
+--{ x : Float
+--}
+
+
+onSeek eventName =
+    on eventName (Json.map MouseMove mouseMoveDecoder)
+
+
+mouseMoveDecoder : Json.Decoder MouseMovement
+mouseMoveDecoder =
+    Json.map2 MouseMovement
+        (Json.at [ "pageX" ] Json.float)
+        (Json.at [ "currentTarget", "offsetWidth" ] Json.float)
+
+
+
+--onTimeUpdate msg =
+--    on "timeupdate" (Json.map msg targetCurrentTime)
+--targetCurrentTime : Json.Decoder Float
+--targetCurrentTime =
+--    Json.at [ "target", "currentTime" ] Json.float
 
 
 view : Model -> Html Msg
@@ -299,7 +361,18 @@ view model =
             , div [] [ text "la sonata" ]
             , div [] [ text "deine colore" ]
             ]
-        , div [ class "seeker" ]
+        , div
+            [ --Html.Events.onClick MouseMove
+              exampleOnClickHandler
+            , onSeek "mousemove"
+            , style "background" "#fff"
+            ]
+            [ text "mousemove over me to seek!" ]
+        , div
+            [ class "seeker"
+
+            --, debugMouseMove MouseMove
+            ]
             [ Html.ul
                 [ class "movements"
                 ]
