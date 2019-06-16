@@ -398,19 +398,13 @@ view model =
             , div [] [ text "deine colore" ]
             ]
         , div
-            [ --Html.Events.onClick MouseMove
-              --exampleOnClickHandler
-              onSeek "mousemove"
-            , onSeek "touchmove"
-            , onSeek "mouseup"
-            , style "background" "#fff"
-            , on "mousedown" (Json.succeed SeekerMouseDown)
-            ]
-            [ text "mousemove over me to seek!" ]
-        , div
             [ class "seeker"
 
             --, debugMouseMove MouseMove
+            , onSeek "mousemove"
+            , onSeek "touchmove"
+            , onSeek "mouseup"
+            , on "mousedown" (Json.succeed SeekerMouseDown)
             ]
             [ Html.ul
                 [ class "movements"
@@ -420,14 +414,7 @@ view model =
                 [ class "seasons"
                 ]
                 (seasons |> Array.map (seasonToLi model) |> Array.toList)
-            , Html.input
-                [ type_ "range"
-                , Html.Attributes.max "100"
-                , Html.Attributes.step "0.01"
-                , Html.Attributes.value (String.fromFloat (timeToProgress model.equalizeSizes model.currentTime))
-                , Html.Events.onInput (setProgress model.equalizeSizes)
-                ]
-                []
+            , div [ class "cursor", style "left" (String.fromFloat (timeToProgress model.equalizeSizes model.currentTime) ++ "%") ] []
             ]
         , Html.label []
             [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []
