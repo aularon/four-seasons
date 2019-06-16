@@ -4,6 +4,7 @@ port module FourSeasonsApp exposing (main)
 
 import Array
 import Browser
+import Browser.Events
 import Date exposing (Date)
 import FourSeasons exposing (..)
 import FourSeasons.Utils as Utils
@@ -239,7 +240,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Browser.Events.onMouseUp (Json.succeed SeekerMouseUp)
 
 
 
@@ -402,8 +403,7 @@ view model =
               onSeek "mousemove"
             , onSeek "touchmove"
             , style "background" "#fff"
-            , Html.Events.onMouseDown SeekerMouseDown
-            , Html.Events.onMouseUp SeekerMouseUp
+            , on "mousedown" (Json.succeed SeekerMouseDown)
             ]
             [ text "mousemove over me to seek!" ]
         , div
