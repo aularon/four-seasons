@@ -12,7 +12,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "NODE_ENV=production webpack --mode production",
     "watch": "webpack --mode development --watch",
     "dev": "webpack-dev-server --mode development --port 3000",
     "errors": "webpack --mode development --display-error-details"

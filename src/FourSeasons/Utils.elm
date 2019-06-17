@@ -149,8 +149,8 @@ timeToHue time =
         secondCenter =
             Movement.center secondMovement
 
-        _ =
-            Debug.log "hue" { time = time, firstCenter = firstCenter, secondCenter = secondCenter, fh = firstMovement.hue, sh = secondMovement.hue }
+        --_ =
+        --    Debug.log "hue" { time = time, firstCenter = firstCenter, secondCenter = secondCenter, fh = firstMovement.hue, sh = secondMovement.hue }
     in
     if firstMovement.hue == 0 then
         rangeMap time firstCenter secondCenter 360 (toFloat secondMovement.hue)

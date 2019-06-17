@@ -1,4 +1,6 @@
-var path = require('path');
+const path = require('path');
+
+const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
   // If your entry-point is at "src/index.js" and
@@ -17,7 +19,8 @@ module.exports = {
         loader: "elm-webpack-loader",
         // loader: '../index.js',
         options: {
-          debug: true,
+          debug: !isProd,
+          optimize: isProd
           // warn: true
         }
       },

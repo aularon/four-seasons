@@ -214,23 +214,21 @@ update msg model =
                         targetTime =
                             progressToTime model.equalizeSizes targetPercent
 
-                        _ =
-                            Debug.log "targetTime" targetTime
-
-                        _ =
-                            Debug.log "mm" m
+                        --_ =
+                        --    Debug.log "targetTime" targetTime
+                        --_ =
+                        --    Debug.log "mm" m
                     in
                     ( model, setCurrentTime targetTime )
 
         _ ->
             --Debug.log "Unknown message" (msg)
-            let
-                _ =
-                    Debug.log "Unknown message" msg
-
-                --_ =
-                --    Debug.log "msg" (Json.Encode.encode 2 msg)
-            in
+            --let
+            --    _ =
+            --        Debug.log "Unknown message" msg
+            --    --_ =
+            --    --    Debug.log "msg" (Json.Encode.encode 2 msg)
+            --in
             ( model, Cmd.none )
 
 
