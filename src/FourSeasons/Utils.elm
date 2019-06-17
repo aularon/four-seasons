@@ -1,4 +1,4 @@
-module FourSeasons.Utils exposing (color, formatTime, movementColor, rangeMap, startDate, startOf1988, timeToDate, timeToHue, timeToPosix)
+module FourSeasons.Utils exposing (color, formatTime, monthDayToTime, movementColor, rangeMap, startDate, startOf1988, stringToMonth, timeToDate, timeToHue, timeToPosix)
 
 --import Date exposing (Date, Month(..))
 --import Color exposing (Color)
@@ -157,3 +157,75 @@ timeToHue time =
 
     else
         rangeMap time firstCenter secondCenter (toFloat firstMovement.hue) (toFloat secondMovement.hue)
+
+
+
+-- converts month/day into audio track time
+
+
+monthDayToTime : Month -> Int -> Float
+monthDayToTime m d =
+    let
+        date =
+            Date.fromCalendarDate 1988 m d
+
+        movement =
+            Movement.currentFromDate date
+
+        start =
+            movement |> startDate |> dateToMillis
+
+        end =
+            movement |> Movement.next |> startDate |> dateToMillis
+
+        current =
+            date |> dateToMillis
+
+        _ =
+            Debug.log "jun19date" (dateToMillis (Date.fromCalendarDate 1988 Jun 19))
+    in
+    rangeMap current start end movement.start (Movement.ends movement)
+
+
+stringToMonth : String -> Month
+stringToMonth str =
+    case String.toUpper str of
+        -- console.log('Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ').map(m=>`"${m.toUpperCase()}" -> ${m}`).join('\n'))
+        "JAN" ->
+            Jan
+
+        "FEB" ->
+            Feb
+
+        "MAR" ->
+            Mar
+
+        "APR" ->
+            Apr
+
+        "MAY" ->
+            May
+
+        "JUN" ->
+            Jun
+
+        "JUL" ->
+            Jul
+
+        "AUG" ->
+            Aug
+
+        "SEP" ->
+            Sep
+
+        "OCT" ->
+            Oct
+
+        "NOV" ->
+            Nov
+
+        "DEC" ->
+            Dec
+
+        _ ->
+            Jun

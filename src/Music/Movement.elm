@@ -1,8 +1,9 @@
-module Music.Movement exposing (center, currentFromTime, ends, next, percentWidth, prev, remaininigTillNext)
+module Music.Movement exposing (center, currentFromDate, currentFromTime, ends, next, percentWidth, prev, remaininigTillNext)
 
 --import Date exposing (Date)
 
 import Array
+import Date exposing (Date)
 import FourSeasons exposing (..)
 import Music exposing (Movement)
 
@@ -18,6 +19,20 @@ currentFromTime currentTime =
     case
         movements
             |> Array.filter (\x -> x.start + x.length > currentTime)
+            |> Array.get 0
+    of
+        Nothing ->
+            defaultMovement
+
+        Just val ->
+            val
+
+
+currentFromDate : Date -> Movement
+currentFromDate date =
+    case
+        movements
+            |> Array.filter (\x -> Date.isBetween (Date.fromCalendarDate 1988 x.month x.day) (Date.fromCalendarDate 1988 (next x).month (next x).day) date)
             |> Array.get 0
     of
         Nothing ->

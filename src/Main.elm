@@ -490,5 +490,29 @@ type alias Flags =
 
 init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 init flags url navkey =
+    let
+        _ =
+            Debug.log "jun19" (Utils.monthDayToTime Time.Jun 19)
+
+        startTime =
+            case url.fragment of
+                Just str ->
+                    if String.endsWith "s" str then
+                        -- Seconds
+                        Maybe.withDefault 0 (str |> String.dropRight 1 |> String.toFloat)
+
+                    else
+                        let
+                            month =
+                                Utils.stringToMonth (String.left 3 str)
+
+                            day =
+                                Maybe.withDefault 19 (str |> String.dropLeft 3 |> String.toInt)
+                        in
+                        Utils.monthDayToTime month day
+
+                Nothing ->
+                    0
+    in
     --Debug.log "flags" flags
-    ( initModel, Cmd.none )
+    ( { initModel | currentTime = startTime }, setCurrentTime startTime )
