@@ -3,8 +3,9 @@ port module FourSeasonsApp exposing (main)
 --import Date exposing (Date)
 
 import Array
-import Browser
+import Browser exposing (Document, UrlRequest)
 import Browser.Events
+import Browser.Navigation
 import Date exposing (Date)
 import FourSeasons exposing (..)
 import FourSeasons.Utils as Utils
@@ -16,19 +17,33 @@ import Json.Encode
 import Music exposing (Movement)
 import Music.Movement as Movement
 import Time exposing (utc)
+import Url exposing (Url)
 
 
 
 -- Main
 
 
+main : Program Flags Model Msg
 main =
-    Browser.element
+    Browser.application
         { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlChange = onUrlChange
+        , onUrlRequest = onUrlRequest
         }
+
+
+onUrlChange : Url -> Msg
+onUrlChange url =
+    NoOp
+
+
+onUrlRequest : UrlRequest -> Msg
+onUrlRequest urlReq =
+    NoOp
 
 
 
@@ -372,7 +387,7 @@ mouseMoveDecoder xPath =
 --    Json.at [ "target", "currentTime" ] Json.float
 
 
-view : Model -> Html Msg
+view : Model -> Document Msg
 view model =
     let
         currentMovement =
@@ -381,42 +396,44 @@ view model =
         currentPosix =
             Utils.timeToPosix model.currentTime
     in
-    div [ class "container", style "background" (Utils.color (Utils.timeToHue model.currentTime) 50 70) ]
-        [ audio
-            [ Html.Attributes.id "player"
-            , src "./four-seasons.mp3"
-            , controls True
-            , onTimeUpdate TimeUpdate
-            ]
-            []
-        , debugInfo model
-        , div []
-            [ div [] [ text (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)) ]
-            , div [] [ text "la sonata" ]
-            , div [] [ text "deine colore" ]
-            ]
-        , div
-            [ class "seeker"
+    Document "Four Seasons"
+        [ div [ class "container", style "background" (Utils.color (Utils.timeToHue model.currentTime) 50 70) ]
+            [ audio
+                [ Html.Attributes.id "player"
+                , src "./four-seasons.mp3"
+                , controls True
+                , onTimeUpdate TimeUpdate
+                ]
+                []
+            , debugInfo model
+            , div []
+                [ div [] [ text (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)) ]
+                , div [] [ text "la sonata" ]
+                , div [] [ text "deine colore" ]
+                ]
+            , div
+                [ class "seeker"
 
-            --, debugMouseMove MouseMove
-            , onSeek "mousemove"
-            , onSeek "touchmove"
-            , onSeek "mouseup"
-            , on "mousedown" (Json.succeed SeekerMouseDown)
-            ]
-            [ Html.ul
-                [ class "movements"
+                --, debugMouseMove MouseMove
+                , onSeek "mousemove"
+                , onSeek "touchmove"
+                , onSeek "mouseup"
+                , on "mousedown" (Json.succeed SeekerMouseDown)
                 ]
-                (Array.toList (Array.map (\m -> movementToLi m model) movements))
-            , Html.ul
-                [ class "seasons"
+                [ Html.ul
+                    [ class "movements"
+                    ]
+                    (Array.toList (Array.map (\m -> movementToLi m model) movements))
+                , Html.ul
+                    [ class "seasons"
+                    ]
+                    (seasons |> Array.map (seasonToLi model) |> Array.toList)
+                , div [ class "cursor", style "left" (String.fromFloat (timeToProgress model.equalizeSizes model.currentTime) ++ "%") ] []
                 ]
-                (seasons |> Array.map (seasonToLi model) |> Array.toList)
-            , div [ class "cursor", style "left" (String.fromFloat (timeToProgress model.equalizeSizes model.currentTime) ++ "%") ] []
-            ]
-        , Html.label []
-            [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []
-            , text "Equalize Sizes?"
+            , Html.label []
+                [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []
+                , text "Equalize Sizes?"
+                ]
             ]
         ]
 
@@ -471,7 +488,7 @@ type alias Flags =
     { title : String }
 
 
-init : Flags -> ( Model, Cmd Msg )
-init flags =
+init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init flags url navkey =
     --Debug.log "flags" flags
-    ( { initModel | title = flags.title }, Cmd.none )
+    ( initModel, Cmd.none )
