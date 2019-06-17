@@ -72,7 +72,7 @@ timeToDate currentTime =
 
 dateToMillis : Date -> Float
 dateToMillis date =
-    toFloat (Date.ordinalDay date) * 1.0e3 * 86400 + startOf1988
+    toFloat (Date.ordinalDay date - 1) * 1.0e3 * 86400 + startOf1988
 
 
 
