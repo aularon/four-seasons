@@ -115,7 +115,9 @@ movementToLi m model =
         , style "background" (Utils.movementColor m 70 40)
         , style "width" (String.fromFloat width ++ "%")
         ]
-        [ text m.label ]
+        [ div [ class "tempo" ] [ text m.tempo ]
+        , div [ class "scale" ] [ text m.scale ]
+        ]
 
 
 

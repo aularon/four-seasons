@@ -8,7 +8,8 @@ import Time exposing (Month)
 
 type alias Movement =
     { index : Int
-    , label : String
+    , tempo : String
+    , scale : String
     , start : Float
     , length : Float
     , hue : Int
