@@ -159,27 +159,42 @@ type alias Flags =
 init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 init flags url navkey =
     let
-        --_ =
-        --    Debug.log "jun19" (Utils.monthDayToTime Time.Jun 19)
-        startTime =
-            case url.fragment of
-                Just str ->
-                    if String.endsWith "s" str then
-                        -- Seconds
-                        Maybe.withDefault 0 (str |> String.dropRight 1 |> String.toFloat)
+        _ =
+            Debug.log "url" url
 
-                    else
+        --    Debug.log "jun19" (Utils.monthDayToTime Time.Jun 19)
+        str =
+            url.path
+
+        startTime =
+            if String.startsWith "/time/" str then
+                -- Seconds
+                Maybe.withDefault 0 (str |> String.dropLeft 6 |> String.toFloat)
+
+            else if String.startsWith "/date/" str then
+                case str |> String.dropLeft 6 |> String.split "/" of
+                    [ monthStr, dayStr ] ->
                         let
                             month =
-                                Utils.stringToMonth (String.left 3 str)
+                                monthStr |> Utils.stringToMonth
 
                             day =
-                                Maybe.withDefault 19 (str |> String.dropLeft 3 |> String.toInt)
+                                dayStr |> String.toInt |> Maybe.withDefault 19
                         in
                         Utils.monthDayToTime month day
 
-                Nothing ->
-                    0
+                    _ ->
+                        0
+                --day =
+                --    str
+                --        |> String.slice 10
+                --        |> Utils.stringToMonth
+                --            Maybe.withDefault
+                --            19
+                --            (str |> String.dropLeft 3 |> String.toInt)
+
+            else
+                0
     in
     --Debug.log "flags" flags
     ( { initModel | currentTime = startTime }, setCurrentTime startTime )

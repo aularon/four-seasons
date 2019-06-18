@@ -115,9 +115,9 @@ color h s l =
 
 formatTime : Posix -> String
 formatTime posix =
-    String.fromInt (toHour utc posix)
+    (posix |> toHour utc |> String.fromInt |> String.padLeft 2 '0')
         ++ ":"
-        ++ String.fromInt (toMinute utc posix)
+        ++ (posix |> toMinute utc |> String.fromInt |> String.padLeft 2 '0')
 
 
 

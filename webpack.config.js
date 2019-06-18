@@ -40,6 +40,9 @@ module.exports = {
   devServer: {
     inline: true,
     stats: 'errors-only',
-    contentBase: path.resolve('src')
+    contentBase: path.resolve('src'),
+    historyApiFallback: {
+      index: 'index.html'
+    }
   }
 };

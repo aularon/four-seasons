@@ -18,6 +18,7 @@ html, body, #main, .container {
   .seeker {
     position: absolute;
     bottom: 0;
+    width: 100%;
     .cursor {
       position: absolute;
       height: 20px;
@@ -41,7 +42,7 @@ ul {
     font-size: 12px;
     text-align: center;
     transition: width .25s ease-out;
-    height: 3em;
+    height: 4em;
   }
 }
 .movements li {
@@ -50,7 +51,8 @@ ul {
 .seasons {
   li {
   // border-top: 1px solid #eee;
-  line-height: 3em;
+  line-height: 2em;
+  height: 2em;
 }
 }
 li.active {
@@ -65,6 +67,10 @@ input[type="range"] {
 }
 .date {
   font-size: 10vw;
+  text-align: center;
+}
+.time {
+  font-size: 5vw;
   text-align: center;
 }
 .hint {

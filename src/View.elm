@@ -36,7 +36,7 @@ view model =
             ]
             [ audio
                 [ Html.Attributes.id "player"
-                , src "./four-seasons.mp3"
+                , src "/four-seasons.mp3"
                 , controls True
                 , onTimeUpdate TimeUpdate
                 , on "play" (Json.succeed Play)
@@ -49,6 +49,7 @@ view model =
                 [ Html.Events.onClick PlayPause
                 ]
                 [ div [ class "date" ] [ text (Date.format "MMMM ddd" (Date.fromPosix utc currentPosix)) ]
+                , div [ class "time" ] [ text (Utils.formatTime currentPosix) ]
                 , div [ class "hint" ] [ text "click to play" ]
 
                 --, div [] [ text "la sonata" ]
