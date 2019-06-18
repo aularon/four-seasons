@@ -6,7 +6,7 @@ module FourSeasons.Utils exposing (color, dateToMillis, distortedProgressToTime,
 
 import Array
 import Date exposing (Date)
-import FourSeasons exposing (defaultMovement, fullLength, movements, percentLength)
+import FourSeasons exposing (defaultMovement, firstMovement, fullLength, lastMovement, movements, percentLength)
 import Music exposing (Movement)
 import Music.Movement as Movement
 import Time exposing (Month(..), Posix, millisToPosix, posixToMillis, toHour, toMinute, utc)
@@ -138,8 +138,11 @@ timeToHue time =
         currentCenter =
             Movement.center currentMovement
 
-        ( firstMovement, secondMovement ) =
-            if time < currentCenter then
+        isFirstHalf =
+            time < currentCenter
+
+        ( m1, m2 ) =
+            if isFirstHalf then
                 ( Movement.prev currentMovement, currentMovement )
 
             else
@@ -147,19 +150,28 @@ timeToHue time =
 
         -- we are repeating the extraction for the current center
         firstCenter =
-            Movement.center firstMovement
+            Movement.center m1
 
         secondCenter =
-            Movement.center secondMovement
-
-        --_ =
-        --    Debug.log "hue" { time = time, firstCenter = firstCenter, secondCenter = secondCenter, fh = firstMovement.hue, sh = secondMovement.hue }
+            Movement.center m2
     in
-    if firstMovement.hue == 0 then
-        rangeMap time firstCenter secondCenter 360 (toFloat secondMovement.hue)
+    case ( currentMovement.index, isFirstHalf ) of
+        ( 0, True ) ->
+            --let
+            --    _ =
+            --        Debug.log "hue" { time = time, secondCenter = secondCenter, m2h = m2.hue }
+            --in
+            rangeMap time 0 secondCenter 170 (toFloat m2.hue)
 
-    else
-        rangeMap time firstCenter secondCenter (toFloat firstMovement.hue) (toFloat secondMovement.hue)
+        ( 11, False ) ->
+            rangeMap time firstCenter fullLength (toFloat m1.hue) 170
+
+        ( _, _ ) ->
+            if m1.hue == 0 then
+                rangeMap time firstCenter secondCenter 360 (toFloat m2.hue)
+
+            else
+                rangeMap time firstCenter secondCenter (toFloat m1.hue) (toFloat m2.hue)
 
 
 
