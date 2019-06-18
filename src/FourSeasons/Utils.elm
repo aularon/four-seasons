@@ -181,8 +181,8 @@ monthDayToTime m d =
         current =
             date |> dateToMillis
 
-        _ =
-            Debug.log "jun19date" (dateToMillis (Date.fromCalendarDate 1988 Jun 19))
+        --_ =
+        --    Debug.log "jun19date" (dateToMillis (Date.fromCalendarDate 1988 Jun 19))
     in
     rangeMap current start end movement.start (Movement.ends movement)
 

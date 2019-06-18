@@ -30,4 +30,13 @@ app.ports.setCurrentTime.subscribe(function(time) {
     document.getElementById('player').currentTime = time;
 });
 
+app.ports.playPause.subscribe(function(time) {
+    const player = document.getElementById('player');
+    if (player.paused) {
+      player.play();
+    } else {
+      player.pause();
+    }
+});
+
 // console.log(elmSeed);

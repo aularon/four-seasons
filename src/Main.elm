@@ -55,6 +55,7 @@ type alias Model =
     , equalizeSizes : Bool
     , title : String
     , seekerMouseIsDown : Bool
+    , isPlaying : Bool
     }
 
 
@@ -72,6 +73,9 @@ type Msg
     | ToggleSizing
     | SeekerMouseDown
     | SeekerMouseUp
+    | Play
+    | Pause
+    | PlayPause
 
 
 
@@ -193,6 +197,13 @@ port setCurrentTime : Float -> Cmd msg
 
 
 
+-- elm says "there is often a better way to set things up."
+
+
+port playPause : () -> Cmd msg
+
+
+
 -- UPDATE
 
 
@@ -215,6 +226,15 @@ update msg model =
 
         SeekerMouseUp ->
             ( { model | seekerMouseIsDown = False }, Cmd.none )
+
+        Play ->
+            ( { model | isPlaying = True }, Cmd.none )
+
+        Pause ->
+            ( { model | isPlaying = False }, Cmd.none )
+
+        PlayPause ->
+            ( model, playPause () )
 
         MouseMove m ->
             case ( m.event, model.seekerMouseIsDown ) of
@@ -259,74 +279,67 @@ subscriptions model =
 
 -- VIEW
 -- This one gets us a nice debug div
-
-
-debugInfo model =
-    let
-        currentMovement =
-            Movement.currentFromTime model.currentTime
-
-        currentPosix =
-            Utils.timeToPosix model.currentTime
-    in
-    pre []
-        [ text
-            (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)
-                ++ " "
-                ++ Utils.formatTime currentPosix
-                ++ "\nPrev: "
-                --++ "\n"
-                ++ Debug.toString (Movement.prev currentMovement)
-                ++ " ends @"
-                ++ (currentMovement
-                        |> Movement.prev
-                        |> Movement.ends
-                        |> Debug.toString
-                   )
-                ++ "\nCurrent: "
-                ++ Debug.toString currentMovement
-                ++ " ends @"
-                ++ (currentMovement
-                        |> Movement.ends
-                        |> Debug.toString
-                   )
-                ++ "\nNext: "
-                --++ "\n"
-                ++ Debug.toString (Movement.next currentMovement)
-                ++ " ends @"
-                ++ (currentMovement
-                        |> Movement.next
-                        |> Movement.ends
-                        |> Debug.toString
-                   )
-                ++ "\nRemaining: "
-                ++ Debug.toString (Movement.remaininigTillNext model.currentTime)
-                ++ "\nDate: "
-                ++ Date.format "MMMM ddd, y" (Utils.startDate currentMovement)
-                --++ Debug.toString (Utils.startDate currentMovement)
-                ++ "\nCurrent Time: "
-                ++ Debug.toString model.currentTime
-                ++ "\n"
-                --++ Debug.toString (model.movements |> List.reverse |> List.head)
-                ++ "\n"
-                ++ .label currentMovement
-                ++ "\n"
-                ++ (model.currentTime
-                        |> Debug.toString
-                   )
-                ++ "\n"
-                ++ (model.currentTime
-                        |> Utils.timeToHue
-                        |> Debug.toString
-                   )
-            )
-
-        --(toString (Utils.timeToDate model.currentTime)
-        --)
-        ]
-
-
-
+--debugInfo model =
+--    let
+--        currentMovement =
+--            Movement.currentFromTime model.currentTime
+--        currentPosix =
+--            Utils.timeToPosix model.currentTime
+--    in
+--    pre []
+--        [ text
+--            (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)
+--                ++ " "
+--                ++ Utils.formatTime currentPosix
+--                ++ "\nPrev: "
+--                --++ "\n"
+--                ++ Debug.toString (Movement.prev currentMovement)
+--                ++ " ends @"
+--                ++ (currentMovement
+--                        |> Movement.prev
+--                        |> Movement.ends
+--                        |> Debug.toString
+--                   )
+--                ++ "\nCurrent: "
+--                ++ Debug.toString currentMovement
+--                ++ " ends @"
+--                ++ (currentMovement
+--                        |> Movement.ends
+--                        |> Debug.toString
+--                   )
+--                ++ "\nNext: "
+--                --++ "\n"
+--                ++ Debug.toString (Movement.next currentMovement)
+--                ++ " ends @"
+--                ++ (currentMovement
+--                        |> Movement.next
+--                        |> Movement.ends
+--                        |> Debug.toString
+--                   )
+--                ++ "\nRemaining: "
+--                ++ Debug.toString (Movement.remaininigTillNext model.currentTime)
+--                ++ "\nDate: "
+--                ++ Date.format "MMMM ddd, y" (Utils.startDate currentMovement)
+--                --++ Debug.toString (Utils.startDate currentMovement)
+--                ++ "\nCurrent Time: "
+--                ++ Debug.toString model.currentTime
+--                ++ "\n"
+--                --++ Debug.toString (model.movements |> List.reverse |> List.head)
+--                ++ "\n"
+--                ++ .label currentMovement
+--                ++ "\n"
+--                ++ (model.currentTime
+--                        |> Debug.toString
+--                   )
+--                ++ "\n"
+--                ++ (model.currentTime
+--                        |> Utils.timeToHue
+--                        |> Debug.toString
+--                   )
+--            )
+--        --(toString (Utils.timeToDate model.currentTime)
+--        --)
+--        ]
 --debugMouseMove : (Float -> msg) -> Attribute msg
 --debugMouseMove msg =
 --    let
@@ -397,19 +410,30 @@ view model =
             Utils.timeToPosix model.currentTime
     in
     Document "Four Seasons"
-        [ div [ class "container", style "background" (Utils.color (Utils.timeToHue model.currentTime) 50 70) ]
+        [ div
+            [ class "container"
+            , classList [ ( "playing", model.isPlaying ) ]
+            , style "background" (Utils.color (Utils.timeToHue model.currentTime) 50 70)
+            ]
             [ audio
                 [ Html.Attributes.id "player"
                 , src "./four-seasons.mp3"
                 , controls True
                 , onTimeUpdate TimeUpdate
+                , on "play" (Json.succeed Play)
+                , on "pause" (Json.succeed Pause)
                 ]
                 []
-            , debugInfo model
-            , div []
-                [ div [] [ text (Date.format "MMMM ddd, y" (Date.fromPosix utc currentPosix)) ]
-                , div [] [ text "la sonata" ]
-                , div [] [ text "deine colore" ]
+
+            --, debugInfo model
+            , div
+                [ Html.Events.onClick PlayPause
+                ]
+                [ div [ class "date" ] [ text (Date.format "MMMM ddd" (Date.fromPosix utc currentPosix)) ]
+                , div [ class "hint" ] [ text "click to play" ]
+
+                --, div [] [ text "la sonata" ]
+                --, div [] [ text "deine colore" ]
                 ]
             , div
                 [ class "seeker"
@@ -481,7 +505,7 @@ movementToLi m model =
 
 initModel : Model
 initModel =
-    { currentTime = 0, equalizeSizes = True, title = "", seekerMouseIsDown = False }
+    { currentTime = 0, equalizeSizes = True, title = "", seekerMouseIsDown = False, isPlaying = False }
 
 
 type alias Flags =
@@ -491,9 +515,8 @@ type alias Flags =
 init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 init flags url navkey =
     let
-        _ =
-            Debug.log "jun19" (Utils.monthDayToTime Time.Jun 19)
-
+        --_ =
+        --    Debug.log "jun19" (Utils.monthDayToTime Time.Jun 19)
         startTime =
             case url.fragment of
                 Just str ->
