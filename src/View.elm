@@ -5,7 +5,7 @@ import Browser exposing (Document)
 import Color exposing (Color)
 import Common exposing (InfoState(..), Model, MouseMovement, Msg(..))
 import Date exposing (Date)
-import FourSeasons exposing (movements, seasons)
+import FourSeasons exposing (movements, seasons, sonnets, spring)
 import FourSeasons.Utils as Utils
 import Hex
 import Html exposing (Attribute, Html, audio, div, li, pre, span, text, ul)
@@ -47,6 +47,12 @@ view model =
 
         currentMovement =
             Movement.currentFromTime effectiveTime
+
+        currentSeason =
+            seasons |> Array.get (currentMovement.index // 3) |> Maybe.withDefault spring
+
+        sonnet =
+            sonnets |> Array.get currentMovement.index |> Maybe.withDefault [ [] ]
 
         currentPosix =
             Utils.timeToPosix effectiveTime
@@ -98,7 +104,10 @@ view model =
             , div
                 [ class "main"
                 ]
-                [ div [ class "date" ]
+                [ div [ class "label" ]
+                    [ text (currentSeason.name ++ " #" ++ (currentMovement.index |> modBy 3 |> (+) 1 |> String.fromInt))
+                    ]
+                , div [ class "date" ]
                     [ span [] [ text (dateStr |> String.dropRight 2) ]
                     , Html.sup [] [ text (dateStr |> String.right 2) ]
                     ]
@@ -116,6 +125,7 @@ view model =
                 --, div [ class "hint" ] [ text "click to play" ]
                 --, div [] [ text "la sonata" ]
                 --, div [] [ text "deine colore" ]
+                , div [ class "sonnet" ] (sonnet |> List.map (\p -> sonnetP p))
                 ]
             , div
                 [ class "playpause"
@@ -145,7 +155,43 @@ view model =
             , div
                 [ class "info", Html.Events.onClick ToggleInfo ]
                 [ Html.h1 [] [ text "Vivaldi's Four Seasons" ]
-                , Html.em [] [ text "Click to start!" ]
+                , Html.em []
+                    [ text
+                        (if model.infoState == Start then
+                            "Click to start!"
+
+                         else
+                            "Click to get back!"
+                        )
+                    ]
+                , Html.hr [] []
+                , div [ class "ps" ]
+                    [ Html.p [] [ text "Across the Four Seasons: An exploration into Vivaldi's Four Seasons concerti" ]
+                    , Html.p [] [ text "The Four Seasons is a group of four violin concerti, each of which gives musical expression to a season of the year. Vivaldi separated each concerto into three movements, which gives us a total of 12 movements." ]
+                    , Html.p [] [ text "I mapped every month to a movement, giving it its own color. Spring months were given shades of green, yellows for Summer, reds for Autumn and blues for Winter.\nThis resulted in each day of the year having its own little piece of music within its month's movement. The same way we get a color that corresponds to each and every day!" ]
+                    ]
+                , Html.hr [] []
+                , Html.div [ style "font-weight" "bold" ] [ text "Hope you enjoy it!" ]
+                , Html.em []
+                    [ text
+                        (if model.infoState == Start then
+                            "You can click anywhere, anytime to start!"
+
+                         else
+                            "Click anywhere to get back!"
+                        )
+                    ]
+                , Html.hr [] []
+                , Html.div []
+                    [ text "This exploration is built using "
+                    , Html.a
+                        [ Html.Attributes.href "https://elm-lang.org/", Html.Attributes.target "_blank" ]
+                        [ text "Elm" ]
+                    , text ". You can browse the source here:"
+                    , Html.a
+                        [ Html.Attributes.href "https://github.com/aularon/four-seasons", Html.Attributes.target "_blank" ]
+                        [ text "https://github.com/aularon/four-seasons" ]
+                    ]
 
                 --, div [ class "settings" ]
                 --    [ Html.label []
@@ -182,6 +228,10 @@ view model =
                 ]
             ]
         ]
+
+
+sonnetP p =
+    Html.p [] (List.concatMap (\l -> [ text l, Html.br [] [] ]) p)
 
 
 seasonToLi model s =

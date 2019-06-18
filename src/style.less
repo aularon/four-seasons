@@ -47,6 +47,9 @@ html, body, #main, .container {
     }
   }
 }
+.label {
+
+}
 .info {
   background: rgba(255,255,255,.9);
   position: absolute;
@@ -56,6 +59,11 @@ html, body, #main, .container {
   z-index: 100;
   transition: left .5s ease;
   left: -100%;
+  font-size: 2vmax;
+  .ps {
+    text-align: left;
+    margin: 1em 3em;
+  }
 }
 .show-info .info {
   left: 0%;
@@ -160,4 +168,11 @@ input[type="range"] {
   &:hover {
     border-color: transparent transparent transparent #333;
   }
+}
+.label {
+  font-size: 3vmin;
+  font-weight: bold;
+}
+.sonnet {
+  font-size: 5vmin;
 }
