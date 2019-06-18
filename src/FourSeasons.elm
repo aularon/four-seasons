@@ -1,4 +1,4 @@
-module FourSeasons exposing (defaultMovement, firstMovement, fullLength, lastMovement, movements, percentLength, seasons, sonnets, spring)
+module FourSeasons exposing (assyrianMonths, defaultMovement, firstMovement, fullLength, lastMovement, movements, percentLength, seasons, sonnets, spring)
 
 --import Date exposing (..)
 
@@ -159,4 +159,9 @@ sonnets =
         ]
       ]
     ]
+        |> Array.fromList
+
+
+assyrianMonths =
+    [ "Happiness", "Love", "Building", "Harvesting", "Ripening of Fruits", "Sprinkling of Seeds", "Giving", "Awakening of Buried Seeds", "Conceiving", "Resting", "Flooding", "Evil Spirits" ]
         |> Array.fromList

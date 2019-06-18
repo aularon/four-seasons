@@ -5,7 +5,7 @@ import Browser exposing (Document)
 import Color exposing (Color)
 import Common exposing (InfoState(..), Model, MouseMovement, Msg(..))
 import Date exposing (Date)
-import FourSeasons exposing (movements, seasons, sonnets, spring)
+import FourSeasons exposing (assyrianMonths, movements, seasons, sonnets, spring)
 import FourSeasons.Utils as Utils
 import Hex
 import Html exposing (Attribute, Html, audio, div, li, pre, span, text, ul)
@@ -75,6 +75,9 @@ view model =
         dateStr =
             Date.format "MMMM ddd" currentDate
 
+        assyrianMonth =
+            assyrianMonths |> Array.get currentMovement.index |> Maybe.withDefault ""
+
         --_ =
         --    Debug.log "style" (style "background" (Utils.color hue 50 70))
     in
@@ -91,6 +94,7 @@ view model =
             [ audio
                 [ Html.Attributes.id "player"
                 , controls True
+                , Html.Attributes.loop True
                 , onTimeUpdate TimeUpdate
                 , on "play" (Json.succeed Play)
                 , on "pause" (Json.succeed Pause)
@@ -104,14 +108,32 @@ view model =
             , div
                 [ class "main"
                 ]
-                [ div [ class "label" ]
+                [ Html.h2 [] [ text "Current Movement" ]
+                , div [ class "label" ]
                     [ text (currentSeason.name ++ " #" ++ (currentMovement.index |> modBy 3 |> (+) 1 |> String.fromInt))
                     ]
+                , Html.h2 [] [ text "Matching Date/Time" ]
                 , div [ class "date" ]
                     [ span [] [ text (dateStr |> String.dropRight 2) ]
                     , Html.sup [] [ text (dateStr |> String.right 2) ]
                     ]
                 , div [ class "time" ] [ text (Utils.formatTime currentPosix) ]
+
+                --, div [ class "hint" ] [ text "click to play" ]
+                --, div [] [ text "la sonata" ]
+                --, div [] [ text "deine colore" ]
+                , Html.h2 [] [ text "Sonnet" ]
+                , div [ class "sonnet" ] (sonnet |> List.map (\p -> sonnetP p))
+                , Html.h2 [] [ text "Trivia" ]
+                , div
+                    [ class "color" ]
+                    [ div [] [ text "Corresponding Assyrian Month:" ]
+                    , Html.strong
+                        []
+                        [ text ("Month of " ++ assyrianMonth) ]
+                    ]
+
+                --, div [] [ text " (click to copy!)" ]
                 , div
                     [ class "color" ]
                     [ div [] [ text "Day's color:" ]
@@ -121,11 +143,6 @@ view model =
 
                     --, div [] [ text " (click to copy!)" ]
                     ]
-
-                --, div [ class "hint" ] [ text "click to play" ]
-                --, div [] [ text "la sonata" ]
-                --, div [] [ text "deine colore" ]
-                , div [ class "sonnet" ] (sonnet |> List.map (\p -> sonnetP p))
                 ]
             , div
                 [ class "playpause"
