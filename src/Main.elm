@@ -63,9 +63,6 @@ port setCurrentTime : Float -> Cmd msg
 port externalAction : String -> Cmd msg
 
 
-port modifyUrl : String -> Cmd msg
-
-
 
 -- UPDATE
 
@@ -82,7 +79,7 @@ update msg model =
     case msg of
         -- The audio is playing and we get an update
         TimeUpdate time ->
-            ( { model | currentTime = time }, modifyUrl ("/date/" ++ Date.format "MMM/dd" currentDate) )
+            ( { model | currentTime = time }, Cmd.none )
 
         -- The user seeks to a new timing
         SetTime newTime ->
