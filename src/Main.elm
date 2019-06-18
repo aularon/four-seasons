@@ -5,10 +5,12 @@ import Browser exposing (UrlRequest)
 import Browser.Events
 import Browser.Navigation
 import Common exposing (Model, MouseMovement, Msg(..))
+import Date
 import FourSeasons exposing (..)
 import FourSeasons.Utils as Utils
 import Json.Decode as Json
 import Json.Encode
+import Time exposing (utc)
 import Url exposing (Url)
 import View exposing (view)
 
@@ -65,16 +67,26 @@ port setCurrentTime : Float -> Cmd msg
 port playPause : () -> Cmd msg
 
 
+port modifyUrl : String -> Cmd msg
+
+
 
 -- UPDATE
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    let
+        currentPosix =
+            Utils.timeToPosix model.currentTime
+
+        currentDate =
+            Date.fromPosix utc currentPosix
+    in
     case msg of
         -- The audio is playing and we get an update
         TimeUpdate time ->
-            ( { model | currentTime = time }, Cmd.none )
+            ( { model | currentTime = time }, modifyUrl ("/date/" ++ Date.format "MMM/dd" currentDate) )
 
         -- The user seeks to a new timing
         SetTime newTime ->
@@ -153,15 +165,12 @@ initModel =
 
 
 type alias Flags =
-    { title : String }
+    { now : Int }
 
 
 init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 init flags url navkey =
     let
-        _ =
-            Debug.log "url" url
-
         --    Debug.log "jun19" (Utils.monthDayToTime Time.Jun 19)
         str =
             url.path
@@ -183,6 +192,9 @@ init flags url navkey =
                         in
                         Utils.monthDayToTime month day
 
+                    [ monthStr ] ->
+                        Utils.monthDayToTime (monthStr |> Utils.stringToMonth) 1
+
                     _ ->
                         0
                 --day =
@@ -194,7 +206,14 @@ init flags url navkey =
                 --            (str |> String.dropLeft 3 |> String.toInt)
 
             else
-                0
+                let
+                    today =
+                        flags.now |> Time.millisToPosix |> Date.fromPosix utc
+
+                    _ =
+                        Debug.log "now" today
+                in
+                Utils.monthDayToTime (Date.month today) (Date.day today)
     in
     --Debug.log "flags" flags
     ( { initModel | currentTime = startTime }, setCurrentTime startTime )

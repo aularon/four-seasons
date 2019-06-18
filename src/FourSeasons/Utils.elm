@@ -2,6 +2,7 @@ module FourSeasons.Utils exposing (color, dateToMillis, distortedProgressToTime,
 
 --import Date exposing (Date, Month(..))
 --import Color exposing (Color)
+--import Parser
 
 import Array
 import Date exposing (Date)

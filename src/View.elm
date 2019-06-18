@@ -27,6 +27,12 @@ view model =
 
         currentPosix =
             Utils.timeToPosix model.currentTime
+
+        currentDate =
+            Date.fromPosix utc currentPosix
+
+        currentProgress =
+            Utils.timeToProgress model.equalizeSizes model.currentTime
     in
     Document "Four Seasons"
         [ div
@@ -47,8 +53,9 @@ view model =
             --, debugInfo model
             , div
                 [ Html.Events.onClick PlayPause
+                , class "main"
                 ]
-                [ div [ class "date" ] [ text (Date.format "MMMM ddd" (Date.fromPosix utc currentPosix)) ]
+                [ div [ class "date" ] [ text (Date.format "MMMM ddd" currentDate) ]
                 , div [ class "time" ] [ text (Utils.formatTime currentPosix) ]
                 , div [ class "hint" ] [ text "click to play" ]
 
@@ -72,7 +79,8 @@ view model =
                     [ class "seasons"
                     ]
                     (seasons |> Array.map (seasonToLi model) |> Array.toList)
-                , div [ class "cursor", style "left" (String.fromFloat (Utils.timeToProgress model.equalizeSizes model.currentTime) ++ "%") ] []
+                , div [ class "cursor", style "left" (String.fromFloat currentProgress ++ "%") ] []
+                , div [ class "progress", style "width" (String.fromFloat (100 - currentProgress) ++ "%") ] []
                 ]
             , Html.label []
                 [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []

@@ -4,6 +4,7 @@ user-select: none;
 -moz-user-select: none;
 -webkit-user-select: none;
 -ms-user-select: none;
+font-family: sans-serif;
 }
 html, body, ul {
   margin: 0;
@@ -16,15 +17,29 @@ html, body, #main, .container {
 .container {
   position: relative;
   .seeker {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
     .cursor {
       position: absolute;
-      height: 20px;
-      width: 1px;
-      background: black;
-      top: 2em;
+      height: 2em;
+      // background: red;
+      width: 0px;
+      bottom: 1em;
+      margin-left: -8px;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      
+      border-bottom: 20px solid #333;
+      border-top: 20px solid #333;
+      z-index: 10;
+    }
+    .progress {
+      background: #fff;
+      opacity: 0.5;
+      height: 100%;
+      right: 0;
+      position: absolute;
     }
   }
 }
@@ -44,6 +59,13 @@ ul {
     transition: width .25s ease-out;
     height: 4em;
   }
+}
+audio {
+  display: none;
+}
+.main {
+
+    font-family: serif;
 }
 .movements li {
     // height: 6em;

@@ -18,7 +18,7 @@ main.innerHTML = ''
 
 var app = Elm.Elm.FourSeasonsApp.init({
   flags: {
-    title: ""
+    now: Date.now()
   }
 });
 
@@ -28,6 +28,12 @@ var app = Elm.Elm.FourSeasonsApp.init({
 
 app.ports.setCurrentTime.subscribe(function(time) {
     document.getElementById('player').currentTime = time;
+});
+
+// Change the URL upon request, inform app of the change.
+app.ports.modifyUrl.subscribe(function(url) {
+    history.replaceState({}, '', url);
+    // app.ports.onUrlChange.send(location.href);
 });
 
 app.ports.playPause.subscribe(function(time) {
