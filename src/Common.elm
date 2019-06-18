@@ -9,6 +9,7 @@ type alias Model =
     , title : String
     , seekerMouseIsDown : Bool
     , isPlaying : Bool
+    , seekTime : Float
     }
 
 
@@ -28,7 +29,7 @@ type Msg
     | SeekerMouseUp
     | Play
     | Pause
-    | PlayPause String
+    | ExternalAction String
 
 
 type alias MouseMovement =

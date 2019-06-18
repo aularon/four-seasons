@@ -38,20 +38,27 @@ colorToHex color =
 view : Model -> Document Msg
 view model =
     let
+        effectiveTime =
+            if model.seekerMouseIsDown then
+                model.seekTime
+
+            else
+                model.currentTime
+
         currentMovement =
-            Movement.currentFromTime model.currentTime
+            Movement.currentFromTime effectiveTime
 
         currentPosix =
-            Utils.timeToPosix model.currentTime
+            Utils.timeToPosix effectiveTime
 
         currentDate =
             Date.fromPosix utc currentPosix
 
         currentProgress =
-            Utils.timeToProgress model.equalizeSizes model.currentTime
+            Utils.timeToProgress model.equalizeSizes effectiveTime
 
         hue =
-            Utils.timeToHue model.currentTime
+            Utils.timeToHue effectiveTime
 
         color =
             Color.hsl (hue / 360) 0.5 0.7
@@ -73,17 +80,19 @@ view model =
             ]
             [ audio
                 [ Html.Attributes.id "player"
-                , src "/four-seasons.mp3"
                 , controls True
                 , onTimeUpdate TimeUpdate
                 , on "play" (Json.succeed Play)
                 , on "pause" (Json.succeed Pause)
                 ]
-                []
+                [ Html.source [ src "/four-seasons.ogg", type_ "audio/ogg" ] []
+                , Html.source [ src "/four-seasons.m4a", type_ "audio/mp4" ] []
+                , Html.source [ src "/four-seasons.mp3", type_ "audio/mpeg" ] []
+                ]
 
             --, debugInfo model
             , div
-                [ Html.Events.onClick (PlayPause "pause")
+                [ Html.Events.onClick (ExternalAction "pause")
                 , class "main"
                 ]
                 [ div [ class "date" ]
@@ -108,7 +117,7 @@ view model =
                 [ class "playpause"
                 , classList [ ( "paused", model.isPlaying ) ]
                 , Html.Events.onClick
-                    (PlayPause
+                    (ExternalAction
                         (if model.isPlaying then
                             "pause"
 
@@ -118,6 +127,11 @@ view model =
                     )
                 ]
                 []
+            , div
+                [ class "share"
+                , Html.Events.onClick (ExternalAction "share")
+                ]
+                [ text "share!" ]
 
             --, div
             --    [ class "info", Html.Events.onClick (PlayPause "play") ]
@@ -134,6 +148,7 @@ view model =
                 , onSeek "touchmove"
                 , onSeek "mouseup"
                 , on "mousedown" (Json.succeed SeekerMouseDown)
+                , on "touchend" (Json.succeed SeekerMouseUp)
                 ]
                 [ Html.ul
                     [ class "movements"

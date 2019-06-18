@@ -36,13 +36,23 @@ app.ports.modifyUrl.subscribe(function(url) {
     // app.ports.onUrlChange.send(location.href);
 });
 
-app.ports.playPause.subscribe(function(action) {
+app.ports.externalAction.subscribe(function(action) {
   // console.log(action)
     const player = document.getElementById('player');
     if (action === 'play') {
       player.play();
-    } else {
+    } else if (action === 'pause') {
       player.pause();
+    } else if (action === 'share') {
+      try {
+        navigator.share({
+          title: document.title,
+          text: 'Text goes here...',
+          url: document.location.href,
+        }); // share the URL of MDN
+      } catch (e) {
+        console.log(e)
+      }
     }
 });
 

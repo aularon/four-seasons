@@ -60,7 +60,7 @@ setProgress equalizeSizes input =
 port setCurrentTime : Float -> Cmd msg
 
 
-port playPause : String -> Cmd msg
+port externalAction : String -> Cmd msg
 
 
 port modifyUrl : String -> Cmd msg
@@ -95,7 +95,11 @@ update msg model =
             ( { model | seekerMouseIsDown = True }, Cmd.none )
 
         SeekerMouseUp ->
-            ( { model | seekerMouseIsDown = False }, Cmd.none )
+            if model.seekerMouseIsDown then
+                ( { model | seekerMouseIsDown = False, currentTime = model.seekTime }, setCurrentTime model.seekTime )
+
+            else
+                ( model, Cmd.none )
 
         Play ->
             ( { model | isPlaying = True }, Cmd.none )
@@ -103,8 +107,8 @@ update msg model =
         Pause ->
             ( { model | isPlaying = False }, Cmd.none )
 
-        PlayPause action ->
-            ( model, playPause action )
+        ExternalAction action ->
+            ( model, externalAction action )
 
         MouseMove m ->
             case ( m.event, model.seekerMouseIsDown ) of
@@ -124,7 +128,7 @@ update msg model =
                         --_ =
                         --    Debug.log "mm" m
                     in
-                    ( model, setCurrentTime targetTime )
+                    ( { model | seekTime = targetTime, seekerMouseIsDown = True }, Cmd.none )
 
         _ ->
             --Debug.log "Unknown message" (msg)
@@ -157,7 +161,13 @@ subscriptions model =
 
 initModel : Model
 initModel =
-    { currentTime = 0, equalizeSizes = True, title = "", seekerMouseIsDown = False, isPlaying = False }
+    { currentTime = 0
+    , equalizeSizes = True
+    , title = ""
+    , seekerMouseIsDown = False
+    , isPlaying = False
+    , seekTime = 0
+    }
 
 
 type alias Flags =
