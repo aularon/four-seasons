@@ -30,11 +30,9 @@ app.ports.setCurrentTime.subscribe(function(time) {
     document.getElementById('player').currentTime = time;
 });
 
-// Change the URL upon request, inform app of the change.
-app.ports.modifyUrl.subscribe(function(url) {
-    history.replaceState({}, '', url);
-    // app.ports.onUrlChange.send(location.href);
-});
+// app.ports.modifyUrl.subscribe(function(url) {
+//     history.replaceState({}, '', url);
+// });
 
 app.ports.externalAction.subscribe(function(action) {
   // console.log(action)
