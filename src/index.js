@@ -36,9 +36,10 @@ app.ports.modifyUrl.subscribe(function(url) {
     // app.ports.onUrlChange.send(location.href);
 });
 
-app.ports.playPause.subscribe(function(time) {
+app.ports.playPause.subscribe(function(action) {
+  // console.log(action)
     const player = document.getElementById('player');
-    if (player.paused) {
+    if (action === 'play') {
       player.play();
     } else {
       player.pause();

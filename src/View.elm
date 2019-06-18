@@ -59,6 +59,9 @@ view model =
         hex =
             Color.hsl (hue / 360) 0.7 0.5 |> colorToHex
 
+        dateStr =
+            Date.format "MMMM ddd" currentDate
+
         --_ =
         --    Debug.log "style" (style "background" (Utils.color hue 50 70))
     in
@@ -80,10 +83,13 @@ view model =
 
             --, debugInfo model
             , div
-                [ Html.Events.onClick PlayPause
+                [ Html.Events.onClick (PlayPause "pause")
                 , class "main"
                 ]
-                [ div [ class "date" ] [ text (Date.format "MMMM ddd" currentDate) ]
+                [ div [ class "date" ]
+                    [ span [] [ text (dateStr |> String.dropRight 2) ]
+                    , Html.sup [] [ text (dateStr |> String.right 2) ]
+                    ]
                 , div [ class "time" ] [ text (Utils.formatTime currentPosix) ]
                 , div
                     [ class "color" ]
@@ -98,6 +104,28 @@ view model =
                 --, div [] [ text "la sonata" ]
                 --, div [] [ text "deine colore" ]
                 ]
+            , div
+                [ class "playpause"
+                , classList [ ( "paused", model.isPlaying ) ]
+                , Html.Events.onClick
+                    (PlayPause
+                        (if model.isPlaying then
+                            "pause"
+
+                         else
+                            "play"
+                        )
+                    )
+                ]
+                []
+
+            --, div
+            --    [ class "info", Html.Events.onClick (PlayPause "play") ]
+            --    [ Html.label []
+            --        [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []
+            --        , text "Equalize Sizes?"
+            --        ]
+            --    ]
             , div
                 [ class "seeker"
 
@@ -115,12 +143,13 @@ view model =
                     [ class "seasons"
                     ]
                     (seasons |> Array.map (seasonToLi model) |> Array.toList)
-                , div [ class "cursor", style "left" (String.fromFloat currentProgress ++ "%") ] []
+                , div
+                    [ class "cursor"
+                    , style "left" (String.fromFloat currentProgress ++ "%")
+                    , style "border-color" (Color.hsl (hue / 360) 0.9 0.2 |> Color.toCssString)
+                    ]
+                    []
                 , div [ class "progress", style "width" (String.fromFloat (100 - currentProgress) ++ "%") ] []
-                ]
-            , Html.label []
-                [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []
-                , text "Equalize Sizes?"
                 ]
             ]
         ]

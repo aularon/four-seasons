@@ -34,6 +34,8 @@ html, body, #main, .container {
       
       border-bottom: 20px solid #333;
       border-top: 20px solid #333;
+      border-right-color: transparent !important;
+      border-left-color: transparent !important;
       z-index: 10;
     }
     .progress {
@@ -44,6 +46,20 @@ html, body, #main, .container {
       position: absolute;
     }
   }
+}
+.info {
+  background: rgba(255,255,255,0.8);
+  position: absolute;
+  top: 0;
+  width: 100%;
+  min-height: 100%;
+  z-index: 100;
+  transition: left .5s ease;
+  left: 0%;
+}
+.playing .info {
+  left: -100%;
+
 }
 audio {
   width: 100%;
@@ -109,4 +125,31 @@ input[type="range"] {
 }
 .hint {
   font-style: italic;
+}
+
+
+.playpause {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 0;
+  box-sizing: border-box;
+  width: 0;
+  height: 10vmin;
+
+  border: transparent 0px solid;
+  border-left-color:#111;
+  transition: 100ms all ease-out;
+  cursor: pointer;
+  border-style: solid;
+  border-width: 5vmin 0 5vmin 8vmin;
+
+  &.paused {
+    border-style: double;
+    border-width: 0 0 0 8vmin;
+  }
+
+  &:hover {
+    border-color: transparent transparent transparent #333;
+  }
 }

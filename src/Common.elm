@@ -28,7 +28,7 @@ type Msg
     | SeekerMouseUp
     | Play
     | Pause
-    | PlayPause
+    | PlayPause String
 
 
 type alias MouseMovement =

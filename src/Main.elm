@@ -60,11 +60,7 @@ setProgress equalizeSizes input =
 port setCurrentTime : Float -> Cmd msg
 
 
-
--- elm says "there is often a better way to set things up."
-
-
-port playPause : () -> Cmd msg
+port playPause : String -> Cmd msg
 
 
 port modifyUrl : String -> Cmd msg
@@ -107,8 +103,8 @@ update msg model =
         Pause ->
             ( { model | isPlaying = False }, Cmd.none )
 
-        PlayPause ->
-            ( model, playPause () )
+        PlayPause action ->
+            ( model, playPause action )
 
         MouseMove m ->
             case ( m.event, model.seekerMouseIsDown ) of
