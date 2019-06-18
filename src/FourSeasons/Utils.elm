@@ -107,7 +107,7 @@ color h s l =
 
 movementColor : Movement -> Float -> Float -> Color
 movementColor m s l =
-    Color.hsl (toFloat m.hue / 360) s l
+    Color.hsl (m.hue / 360) s l
 
 
 
@@ -161,17 +161,17 @@ timeToHue time =
             --    _ =
             --        Debug.log "hue" { time = time, secondCenter = secondCenter, m2h = m2.hue }
             --in
-            rangeMap time 0 secondCenter 170 (toFloat m2.hue)
+            rangeMap time 0 secondCenter 170 m2.hue
 
         ( 11, False ) ->
-            rangeMap time firstCenter fullLength (toFloat m1.hue) 170
+            rangeMap time firstCenter fullLength m1.hue 170
 
         ( _, _ ) ->
             if m1.hue == 0 then
-                rangeMap time firstCenter secondCenter 360 (toFloat m2.hue)
+                rangeMap time firstCenter secondCenter 360 m2.hue
 
             else
-                rangeMap time firstCenter secondCenter (toFloat m1.hue) (toFloat m2.hue)
+                rangeMap time firstCenter secondCenter m1.hue m2.hue
 
 
 

@@ -12,7 +12,7 @@ type alias Movement =
     , scale : String
     , start : Float
     , length : Float
-    , hue : Int
+    , hue : Float
     , month : Month
     , day : Int
     }
