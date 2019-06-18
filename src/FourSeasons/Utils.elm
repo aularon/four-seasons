@@ -1,10 +1,10 @@
 module FourSeasons.Utils exposing (color, dateToMillis, distortedProgressToTime, formatTime, monthDayToTime, movementColor, progressToTime, rangeMap, startDate, startOf1988, stringToMonth, timeToDate, timeToDistortedProgress, timeToHue, timeToPosix, timeToProgress)
 
 --import Date exposing (Date, Month(..))
---import Color exposing (Color)
 --import Parser
 
 import Array
+import Color exposing (Color)
 import Date exposing (Date)
 import FourSeasons exposing (defaultMovement, firstMovement, fullLength, lastMovement, movements, percentLength)
 import Music exposing (Movement)
@@ -100,14 +100,14 @@ startDate movement =
 -- gets an hsl(,,) css string representation from a movement and saturation/luminisity pair
 
 
-movementColor : Movement -> Int -> Int -> String
-movementColor m s l =
-    color (toFloat m.hue) s l
-
-
 color : Float -> Int -> Int -> String
 color h s l =
     "hsl(" ++ String.join "," [ String.fromFloat h, String.fromInt s ++ "%", String.fromInt l ++ "%" ] ++ ")"
+
+
+movementColor : Movement -> Float -> Float -> Color
+movementColor m s l =
+    Color.hsl (toFloat m.hue / 360) s l
 
 
 

@@ -5,6 +5,7 @@ user-select: none;
 -webkit-user-select: none;
 -ms-user-select: none;
 font-family: sans-serif;
+  text-align: center;
 }
 html, body, ul {
   margin: 0;
@@ -17,6 +18,7 @@ html, body, #main, .container {
 .container {
   position: relative;
   .seeker {
+    cursor: pointer;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -55,7 +57,6 @@ ul {
     float: left;
     // width: 8.3333%;
     font-size: 12px;
-    text-align: center;
     transition: width .25s ease-out;
     height: 4em;
   }
@@ -89,13 +90,23 @@ input[type="range"] {
 }
 .date {
   font-size: 10vw;
-  text-align: center;
 }
 .time {
   font-size: 5vw;
-  text-align: center;
+}
+.color {
+  background: #333;
+  width: 70%;
+  max-width: 50em;
+  margin: 0 auto;
+  line-height: 2em;
+  color: #eee;
+  // height: 2em;
+  .hex {
+    font-family: monospace;
+    font-size: 2em;
+  }
 }
 .hint {
-  text-align: center;
   font-style: italic;
 }

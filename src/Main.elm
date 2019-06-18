@@ -209,9 +209,6 @@ init flags url navkey =
                 let
                     today =
                         flags.now |> Time.millisToPosix |> Date.fromPosix utc
-
-                    _ =
-                        Debug.log "now" today
                 in
                 Utils.monthDayToTime (Date.month today) (Date.day today)
     in

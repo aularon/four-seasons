@@ -2,11 +2,13 @@ module View exposing (view)
 
 import Array
 import Browser exposing (Document)
+import Color exposing (Color)
 import Common exposing (Model, MouseMovement, Msg(..))
 import Date exposing (Date)
 import FourSeasons exposing (movements, seasons)
 import FourSeasons.Utils as Utils
-import Html exposing (Attribute, Html, audio, div, li, pre, text, ul)
+import Hex
+import Html exposing (Attribute, Html, audio, div, li, pre, span, text, ul)
 import Html.Attributes exposing (class, classList, controls, src, style, type_)
 import Html.Events exposing (on)
 import Json.Decode as Json
@@ -17,6 +19,20 @@ import Time exposing (utc)
 
 
 -- VIEW
+
+
+colorToHex : Color -> String
+colorToHex color =
+    let
+        rgba =
+            Color.toRgba color
+
+        hex =
+            [ rgba.red, rgba.green, rgba.blue ]
+                |> List.map (\x -> x * 256 |> round |> Hex.toString |> String.padLeft 2 '0')
+                |> String.join ""
+    in
+    hex
 
 
 view : Model -> Document Msg
@@ -33,12 +49,24 @@ view model =
 
         currentProgress =
             Utils.timeToProgress model.equalizeSizes model.currentTime
+
+        hue =
+            Utils.timeToHue model.currentTime
+
+        color =
+            Color.hsl (hue / 360) 0.5 0.7
+
+        hex =
+            Color.hsl (hue / 360) 0.7 0.5 |> colorToHex
+
+        --_ =
+        --    Debug.log "style" (style "background" (Utils.color hue 50 70))
     in
     Document "Four Seasons"
         [ div
             [ class "container"
             , classList [ ( "playing", model.isPlaying ) ]
-            , style "background" (Utils.color (Utils.timeToHue model.currentTime) 50 70)
+            , style "background" (Color.toCssString color)
             ]
             [ audio
                 [ Html.Attributes.id "player"
@@ -57,6 +85,14 @@ view model =
                 ]
                 [ div [ class "date" ] [ text (Date.format "MMMM ddd" currentDate) ]
                 , div [ class "time" ] [ text (Utils.formatTime currentPosix) ]
+                , div
+                    [ class "color" ]
+                    [ div [] [ text "your color is " ]
+                    , div
+                        [ style "color" ("#" ++ hex), class "hex" ]
+                        [ text ("#" ++ hex |> String.toUpper) ]
+                    , div [] [ text " (click to copy!)" ]
+                    ]
                 , div [ class "hint" ] [ text "click to play" ]
 
                 --, div [] [ text "la sonata" ]
@@ -101,7 +137,7 @@ seasonToLi model s =
     li
         [ style "width"
             (String.fromFloat width ++ "%")
-        , style "background" (Utils.color s.hue 70 40)
+        , style "background" (Color.toCssString (Color.hsl (s.hue / 360) 0.7 0.4))
         ]
         [ text s.name ]
 
@@ -121,7 +157,7 @@ movementToLi m model =
     in
     li
         [ classList [ ( "active", m == currentMovement ) ]
-        , style "background" (Utils.movementColor m 70 40)
+        , style "background" (Utils.movementColor m 0.7 0.4 |> Color.toCssString)
         , style "width" (String.fromFloat width ++ "%")
         ]
         [ div [ class "tempo" ] [ text m.tempo ]
