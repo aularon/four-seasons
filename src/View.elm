@@ -3,7 +3,7 @@ module View exposing (view)
 import Array
 import Browser exposing (Document)
 import Color exposing (Color)
-import Common exposing (Model, MouseMovement, Msg(..))
+import Common exposing (InfoState(..), Model, MouseMovement, Msg(..))
 import Date exposing (Date)
 import FourSeasons exposing (movements, seasons)
 import FourSeasons.Utils as Utils
@@ -75,7 +75,11 @@ view model =
     Document "Four Seasons"
         [ div
             [ class "container"
-            , classList [ ( "playing", model.isPlaying ) ]
+            , classList
+                [ ( "playing", model.isPlaying )
+                , ( "start", model.infoState == Start )
+                , ( "show-info", model.infoState /= Hidden )
+                ]
             , style "background" (Color.toCssString color)
             ]
             [ audio
@@ -92,8 +96,7 @@ view model =
 
             --, debugInfo model
             , div
-                [ Html.Events.onClick (ExternalAction "pause")
-                , class "main"
+                [ class "main"
                 ]
                 [ div [ class "date" ]
                     [ span [] [ text (dateStr |> String.dropRight 2) ]
@@ -102,14 +105,15 @@ view model =
                 , div [ class "time" ] [ text (Utils.formatTime currentPosix) ]
                 , div
                     [ class "color" ]
-                    [ div [] [ text "your color is " ]
+                    [ div [] [ text "Day's color:" ]
                     , div
                         [ style "color" ("#" ++ hex), class "hex" ]
                         [ text ("#" ++ hex |> String.toUpper) ]
-                    , div [] [ text " (click to copy!)" ]
-                    ]
-                , div [ class "hint" ] [ text "click to play" ]
 
+                    --, div [] [ text " (click to copy!)" ]
+                    ]
+
+                --, div [ class "hint" ] [ text "click to play" ]
                 --, div [] [ text "la sonata" ]
                 --, div [] [ text "deine colore" ]
                 ]
@@ -128,18 +132,28 @@ view model =
                 ]
                 []
             , div
-                [ class "share"
-                , Html.Events.onClick (ExternalAction "share")
+                [ class "info-button"
+                , Html.Events.onClick ToggleInfo
                 ]
-                [ text "share!" ]
+                [ text "?" ]
 
             --, div
-            --    [ class "info", Html.Events.onClick (PlayPause "play") ]
-            --    [ Html.label []
-            --        [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []
-            --        , text "Equalize Sizes?"
-            --        ]
+            --    [ class "share"
+            --    , Html.Events.onClick (ExternalAction "share")
             --    ]
+            --    [ text "share!" ]
+            , div
+                [ class "info", Html.Events.onClick ToggleInfo ]
+                [ Html.h1 [] [ text "Vivaldi's Four Seasons" ]
+                , Html.em [] [ text "Click to start!" ]
+
+                --, div [ class "settings" ]
+                --    [ Html.label []
+                --        [ Html.input [ type_ "checkbox", Html.Attributes.checked model.equalizeSizes, Html.Events.onClick ToggleSizing ] []
+                --        , text "Equalize Sizes?"
+                --        ]
+                --    ]
+                ]
             , div
                 [ class "seeker"
 

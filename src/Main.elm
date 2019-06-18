@@ -4,7 +4,7 @@ import Array
 import Browser exposing (UrlRequest)
 import Browser.Events
 import Browser.Navigation
-import Common exposing (Model, MouseMovement, Msg(..))
+import Common exposing (InfoState(..), Model, MouseMovement, Msg(..))
 import Date
 import FourSeasons exposing (..)
 import FourSeasons.Utils as Utils
@@ -107,6 +107,19 @@ update msg model =
         Pause ->
             ( { model | isPlaying = False }, Cmd.none )
 
+        ToggleInfo ->
+            if model.infoState == Hidden then
+                ( { model | infoState = Shown }, Cmd.none )
+
+            else
+                ( { model | infoState = Hidden }
+                , if model.infoState == Start then
+                    externalAction "play"
+
+                  else
+                    Cmd.none
+                )
+
         ExternalAction action ->
             ( model, externalAction action )
 
@@ -167,6 +180,7 @@ initModel =
     , seekerMouseIsDown = False
     , isPlaying = False
     , seekTime = 0
+    , infoState = Start
     }
 
 

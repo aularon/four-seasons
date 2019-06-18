@@ -48,17 +48,17 @@ html, body, #main, .container {
   }
 }
 .info {
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,.9);
   position: absolute;
   top: 0;
   width: 100%;
   min-height: 100%;
   z-index: 100;
   transition: left .5s ease;
-  left: 0%;
-}
-.playing .info {
   left: -100%;
+}
+.show-info .info {
+  left: 0%;
 
 }
 audio {
@@ -127,11 +127,19 @@ input[type="range"] {
   font-style: italic;
 }
 
-
-.playpause {
+.info-button {
   position: absolute;
   top: 10px;
   right: 10px;
+  font-size: 12vmin;
+  font-weight: bold;
+  cursor: pointer;
+}
+.playpause {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  left: 10px;
   border: 0;
   box-sizing: border-box;
   width: 0;

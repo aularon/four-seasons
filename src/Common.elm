@@ -1,4 +1,4 @@
-module Common exposing (Model, MouseMovement, Msg(..))
+module Common exposing (InfoState(..), Model, MouseMovement, Msg(..))
 
 -- MODEL
 
@@ -10,12 +10,19 @@ type alias Model =
     , seekerMouseIsDown : Bool
     , isPlaying : Bool
     , seekTime : Float
+    , infoState : InfoState
     }
 
 
 
 -- MSG
 -- Different type of messages we get to our update function
+
+
+type InfoState
+    = Start
+    | Hidden
+    | Shown
 
 
 type Msg
@@ -30,6 +37,7 @@ type Msg
     | Play
     | Pause
     | ExternalAction String
+    | ToggleInfo
 
 
 type alias MouseMovement =
