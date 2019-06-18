@@ -1,9 +1,11 @@
-module FourSeasons.Utils exposing (color, formatTime, monthDayToTime, movementColor, rangeMap, startDate, startOf1988, stringToMonth, timeToDate, timeToHue, timeToPosix)
+module FourSeasons.Utils exposing (color, dateToMillis, distortedProgressToTime, formatTime, monthDayToTime, movementColor, progressToTime, rangeMap, startDate, startOf1988, stringToMonth, timeToDate, timeToDistortedProgress, timeToHue, timeToPosix, timeToProgress)
 
 --import Date exposing (Date, Month(..))
 --import Color exposing (Color)
 
+import Array
 import Date exposing (Date)
+import FourSeasons exposing (defaultMovement, fullLength, movements, percentLength)
 import Music exposing (Movement)
 import Music.Movement as Movement
 import Time exposing (Month(..), Posix, millisToPosix, posixToMillis, toHour, toMinute, utc)
@@ -229,3 +231,87 @@ stringToMonth str =
 
         _ ->
             Jun
+
+
+
+-- convert current % progress to a timestamp
+
+
+progressToTime : Bool -> Float -> Float
+progressToTime equalizeSizes progress =
+    case equalizeSizes of
+        True ->
+            distortedProgressToTime progress
+
+        False ->
+            progress * fullLength / 100
+
+
+
+-- The distorted extension of the one above
+
+
+distortedProgressToTime : Float -> Float
+distortedProgressToTime progress =
+    let
+        movementNumber =
+            floor (progress / percentLength)
+
+        movement =
+            case Array.get movementNumber movements of
+                Nothing ->
+                    defaultMovement
+
+                Just m ->
+                    m
+
+        relativeProgress =
+            (progress - (toFloat movementNumber * percentLength)) * 12.0
+
+        relativeTime =
+            movement.length * (relativeProgress / 100)
+
+        adjustedTime =
+            movement.start + relativeTime
+
+        --_ = Debug.log "movementNumber" (movementNumber, movement, relativeProgress)
+        --movementNumber =
+    in
+    adjustedTime
+
+
+
+-- now this one is used to set current value of the slider (input range control)
+-- it depends on current time, and respects equalizeSizes flag
+
+
+timeToProgress : Bool -> Float -> Float
+timeToProgress equalizeSizes time =
+    case equalizeSizes of
+        True ->
+            timeToDistortedProgress time
+
+        False ->
+            time * 100 / fullLength
+
+
+
+-- The distorted extension of the one above
+
+
+timeToDistortedProgress : Float -> Float
+timeToDistortedProgress time =
+    let
+        currentMovement =
+            Movement.currentFromTime time
+
+        baseProgress =
+            toFloat currentMovement.index * percentLength
+
+        extraProgress =
+            (time - currentMovement.start) * percentLength / currentMovement.length
+
+        --_ =
+        --    Debug.log "debug 77:" ( baseProgress, extraProgress )
+    in
+    baseProgress + extraProgress
