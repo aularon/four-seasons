@@ -61,6 +61,7 @@ html, body {
   transition: left .5s ease;
   left: -100%;
   font-size: 2vmax;
+  overflow: auto;
   .ps {
     text-align: left;
     margin: 1em 3em;
@@ -139,9 +140,9 @@ input[type="range"] {
 
 .info-button {
   position: fixed;
-  top: 10px;
+  top: -10px;
   right: 10px;
-  font-size: 12vmin;
+  font-size: 15vmin;
   font-weight: bold;
   cursor: pointer;
 }
@@ -172,14 +173,19 @@ input[type="range"] {
   }
 }
 .label {
-  font-size: 3vmin;
+  font-size: 2em;
   font-weight: bold;
 }
 .sonnet {
-  font-size: 5vmin;
+  font-size: 4vw;
+  // text-align: left;
+  // padding: 0 1em;
 }
 
 h2 {
-  margin-top: 0;
+  margin: .3em 0;
   background: rgba(255,255,255,0.3);
+  &:first-child {
+    margin-top: 0;
+  }
 }

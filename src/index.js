@@ -55,3 +55,9 @@ app.ports.externalAction.subscribe(function(action) {
 });
 
 // console.log(elmSeed);
+// g analytics
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'UA-47316095-2');

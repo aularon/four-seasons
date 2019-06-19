@@ -186,6 +186,7 @@ view model =
                     [ Html.p [] [ text "Across the Four Seasons: An exploration into Vivaldi's Four Seasons concerti" ]
                     , Html.p [] [ text "The Four Seasons is a group of four violin concerti, each of which gives musical expression to a season of the year. Vivaldi separated each concerto into three movements, which gives us a total of 12 movements." ]
                     , Html.p [] [ text "I mapped every month to a movement, giving it its own color. Spring months were given shades of green, yellows for Summer, reds for Autumn and blues for Winter.\nThis resulted in each day of the year having its own little piece of music within its month's movement. The same way we get a color that corresponds to each and every day!" ]
+                    , Html.p [] [ text "Finally, I matched the movements with Assyrian months (Not sure about their trustworthiness, but I like the descriptions!), and of course: The corresponding sonnetes that accompany each of the 12 movements." ]
                     ]
                 , Html.hr [] []
                 , Html.div [ style "font-weight" "bold" ] [ text "Hope you enjoy it!" ]
@@ -204,7 +205,7 @@ view model =
                     , Html.a
                         [ Html.Attributes.href "https://elm-lang.org/", Html.Attributes.target "_blank" ]
                         [ text "Elm" ]
-                    , text ". You can browse the source here:"
+                    , text ". You can browse the source code here: "
                     , Html.a
                         [ Html.Attributes.href "https://github.com/aularon/four-seasons", Html.Attributes.target "_blank" ]
                         [ text "https://github.com/aularon/four-seasons" ]
